@@ -8,8 +8,11 @@ var _ = require("underscore");
 var debug = require("debug")("nes:rom")
 
 class Rom {
+
     constructor(uint8Array) {
         this.data = uint8Array;
+        this.prgRom = []
+        this.chrRom = []
 
         // bytes 0-3 must be "NES<0x1A>"
         const header = new Uint8Array([78, 69, 83, 0x1A]);
@@ -35,7 +38,7 @@ class Rom {
         // M: Mirroring.  0 = horizontal, 1 = vertical.
         var flag6 = this.data[6];
         this.fourScreenMode = !!(flag6 & 0b00001000);
-        this.trainer = !!(flag6 & 0b00000100);
+        this.hasTrainer = !!(flag6 & 0b00000100);
         this.SRAM = !!(flag6 & 0b00000010);
         this.mirroringVertical = !!(flag6 & 0b00000001);
 
@@ -55,13 +58,33 @@ class Rom {
         //byte 8 indicates size of PRG RAM in 8KB units
         this.prgRamSize = this.data[8]
 
+        // Check if the remaining bytes in the rom match what's
+        // expected from the header
         const expectedSize = this.prgRomSize * 16*1024 +
                            this.chrRomSize * 8*1024 +
-                           this.trainer * 512 +
+                           this.hasTrainer * 512 +
                            16;
 
         if (this.data.length != expectedSize) {
             throw `Expected ROM to be ${this.data.length} bytes but was ${expectedSize}`;
+        }
+
+        var index = 16;
+
+        // store hasTrainer
+        if (this.hasTrainer) {
+            this.hasTrainer = this.data.slice(index, index+512);
+            index += 512;
+        }
+
+        for (let i = 0; i < this.prgRomSize; i++) {
+            this.prgRom.push(this.data.slice(index, index+16*1024));
+            index += 16*1024;
+        }
+
+        for (let i = 0; i < this.chrRomSize; i++) {
+            this.chrRom.push(this.data.slice(index, index+8*1024));
+            index += 8*1024;
         }
     }
 
