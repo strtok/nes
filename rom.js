@@ -66,7 +66,7 @@ class Rom {
                            16;
 
         if (this.data.length != expectedSize) {
-            throw `Expected ROM to be ${this.data.length} bytes but was ${expectedSize}`;
+            throw `Expected ROM to be ${expectedSize} bytes based on header, but was ${this.data.size}`;
         }
 
         var index = 16;
