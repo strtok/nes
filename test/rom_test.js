@@ -2,7 +2,6 @@ var assert = require('assert');
 var rom = require('../rom')
 var nestest = require('./nestest_rom');
 
-
 describe('rom', () => {
     it('constructs from nestest.nes', function() {
         var romBuffer = nestest.byteArray();
