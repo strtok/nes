@@ -54,6 +54,15 @@ class Rom {
 
         //byte 8 indicates size of PRG RAM in 8KB units
         this.prgRamSize = this.data[8]
+
+        const expectedSize = this.prgRomSize * 16*1024 +
+                           this.chrRomSize * 8*1024 +
+                           this.trainer * 512 +
+                           16;
+
+        if (this.data.length != expectedSize) {
+            throw `Expected ROM to be ${this.data.length} bytes but was ${expectedSize}`;
+        }
     }
 
     get mirroringHorizontal () { return !this.mirroringVertical; }
