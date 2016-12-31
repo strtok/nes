@@ -8,7 +8,7 @@ describe('memory', () => {
         so that the interrupt vector table is loaded properly at
         $FFFA - $FFFF
      */
-    it('should map single PRG-ROM duplicated at $8000 and $C000', function() {
+    it('maps single PRG-ROM duplicated at $8000 and $C000', function() {
         const prgRom = [new Uint8Array(16*1024)];
         prgRom[0].fill(0xCE);
         const memory = new Memory(prgRom);
@@ -16,7 +16,7 @@ describe('memory', () => {
         assert.equal(memory.get8(0xC000), 0xCE);
     });
 
-    it('should map PRG-ROM at $8000 and $C000', function() {
+    it('maps PRG-ROM at $8000 and $C000', function() {
         const prgRom = [new Uint8Array(16*1024), new Uint8Array(16*1024)];
         prgRom[0].fill(0xCE);
         prgRom[1].fill(0xFE);
