@@ -3,16 +3,16 @@
      http://wiki.nesdev.com/w/index.php/NES_2.0
  */
 
-var assert = require("assert");
-var _ = require("underscore");
-var debug = require("debug")("nes:rom")
+let assert = require("assert");
+const _ = require("underscore");
+let debug = require("debug")("nes:rom");
 
 class Rom {
 
     constructor(uint8Array) {
         this.data = uint8Array;
-        this.prgRom = []
-        this.chrRom = []
+        this.prgRom = [];
+        this.chrRom = [];
 
         // bytes 0-3 must be "NES<0x1A>"
         const header = new Uint8Array([78, 69, 83, 0x1A]);
@@ -36,7 +36,7 @@ class Rom {
         // T: Trainer.  0 = no trainer present, 1 = 512 byte trainer at 7000-71FFh
         // B: SRAM at 6000-7FFFh battery backed.  0= no, 1 = yes
         // M: Mirroring.  0 = horizontal, 1 = vertical.
-        var flag6 = this.data[6];
+        const flag6 = this.data[6];
         this.fourScreenMode = !!(flag6 & 0b00001000);
         this.hasTrainer = !!(flag6 & 0b00000100);
         this.SRAM = !!(flag6 & 0b00000010);
@@ -51,12 +51,12 @@ class Rom {
         // P: Playchoice 10.  When set, this is a PC-10 game
         // V: Vs. Unisystem.  When set, this is a Vs. game
         // x: these bits are not used in iNES.
-        var flag7 = this.data[7];
+        const flag7 = this.data[7];
         this.playChoice10 = !!(flag7 & 0b00000010);
         this.vsGame = !!(flag7 & 0b00000001);
 
         //byte 8 indicates size of PRG RAM in 8KB units
-        this.prgRamSize = this.data[8]
+        this.prgRamSize = this.data[8];
 
         // Check if the remaining bytes in the rom match what's
         // expected from the header
@@ -69,7 +69,7 @@ class Rom {
             throw `Expected ROM to be ${expectedSize} bytes based on header, but was ${this.data.size}`;
         }
 
-        var index = 16;
+        let index = 16;
 
         // store hasTrainer
         if (this.hasTrainer) {
@@ -91,4 +91,4 @@ class Rom {
     get mirroringHorizontal () { return !this.mirroringVertical; }
 }
 
-module.exports.Rom = Rom
+module.exports.Rom = Rom;

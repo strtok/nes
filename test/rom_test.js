@@ -1,11 +1,11 @@
-var assert = require('assert');
-var rom = require('../rom')
-var nestest = require('./nestest_rom');
+const assert = require('assert');
+const rom = require('../rom');
+const nestest = require('./nestest_rom');
 
 describe('rom', () => {
     it('constructs from nestest.nes', function() {
-        var romBuffer = nestest.byteArray();
-        var r = new rom.Rom(romBuffer);
+        const romBuffer = nestest.byteArray();
+        const r = new rom.Rom(romBuffer);
 
         assert.equal(r.prgRomSize, 1);
         assert.equal(r.prgRom.length, 1);

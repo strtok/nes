@@ -1,9 +1,9 @@
 /* This is the nesttest CPU test ROM in iNES format */
 
-var _ = require("underscore");
-var base64 = require('base64-js');
 
-var encoded = `TkVTGgEBAAAAAAAAAAAAAEz1xWB42KL/mq0CIBD7rQIgEPupAI0AII0BII0FII0FIK0CIKIgjgYg
+const base64 = require('base64-js');
+
+const encoded = `TkVTGgEBAAAAAAAAAAAAAEz1xWB42KL/mq0CIBD7rQIgEPupAI0AII0BII0FII0FIK0CIKIgjgYg
 ogCOBiCiAKAPqQCNByDK0PqI0PepP40GIKkAjQYgogC9eP+NByDo4CDQ9anAjRdAqQCNFUCpeIXQ
 qfuF0al/hdOgAIwGIIwGIKkAhdepB4XQqcOF0SCnwiCNwqISIGHCpdVKSkqwHEqwDEqwJ0qwA0yB
 wEwmwSBvxsbXENupDYXX0NUgb8bm16XXyQ6QyqkAhdfwxCCJxqXX8AYg7cBMgcCpAIXY5tcg7cDm
