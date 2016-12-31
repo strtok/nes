@@ -1,4 +1,4 @@
-const assert = require('assert');
+const assert = require('chai').assert;
 const rom = require('../rom');
 const nestest = require('./nestest_rom');
 

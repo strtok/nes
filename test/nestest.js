@@ -2,7 +2,7 @@
  * Created by tokie on 12/31/16.
  */
 
-let assert = require('assert');
+let assert = require('chai').assert;
 let rom = require('../rom');
 let nestest = require('./nestest_rom');
 let debug = require('debug')('nes:nestest');
