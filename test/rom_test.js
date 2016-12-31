@@ -1,11 +1,11 @@
 const assert = require('chai').assert;
-const rom = require('../rom');
+const Rom = require('../rom').Rom;
 const nestest = require('./nestest_rom');
 
 describe('rom', () => {
     it('constructs from nestest.nes', function() {
         const romBuffer = nestest.byteArray();
-        const r = new rom.Rom(romBuffer);
+        const r = new Rom(romBuffer);
 
         assert.equal(r.prgRomSize, 1);
         assert.equal(r.prgRom.length, 1);

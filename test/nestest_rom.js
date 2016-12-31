@@ -1,6 +1,11 @@
 /*
     This is the nesttest CPU test ROM in iNES format. The expected
     execution of this ROM is detailed in nestest_log.js.
+
+    If this ROM is started at the normal reset vector, it will provide
+    a UI to start the test.
+
+    Execution can be forced to start at $C000 for automated testing.
 */
 
 
