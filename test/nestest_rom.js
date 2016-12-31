@@ -1,4 +1,7 @@
-/* This is the nesttest CPU test ROM in iNES format */
+/*
+    This is the nesttest CPU test ROM in iNES format. The expected
+    execution of this ROM is detailed in nestest_log.js.
+*/
 
 
 const base64 = require('base64-js');

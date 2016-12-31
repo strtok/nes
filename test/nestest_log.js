@@ -1,3 +1,7 @@
+/*
+    This is a log of how every instruction from the nestest.nes rom should
+    execute.
+ */
 const log = [
     {"address": 0xC000, "a": 0x00, "x": 0x00, "y": 0x00, p: 0x24, sp: 0xFD, cyc: 0},
     {"address": 0xC5F5, "a": 0x00, "x": 0x00, "y": 0x00, p: 0x24, sp: 0xFD, cyc: 9},
