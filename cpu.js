@@ -8,7 +8,7 @@ let AddrMode = {
 let OpCodes = {
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
-                cpu.register.pc = 0x0;
+                cpu.register.pc = cpu.memory.get16(cpu.register.pc + 1);
         }}
     ]
 };

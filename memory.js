@@ -1,3 +1,5 @@
+debug = require('debug')('nes:memory');
+
 class Memory {
     constructor(prgRom) {
         this.prgRom = [prgRom[0]];
@@ -15,6 +17,10 @@ class Memory {
             return this.prgRom[1][addr - 0xC000];
         }
         return 0;
+    }
+
+    get16(addr) {
+        return (this.get8(addr+1) << 8) | this.get8(addr);
     }
 };
 
