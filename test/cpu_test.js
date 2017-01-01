@@ -17,6 +17,21 @@ describe('CPU', () => {
         assert.throws(cpu.execute, Error);
     });
 
+    describe('BCD', () => {
+        it('RELATIVE with carry=1', () => {
+            let cpu = makeCPU([0xB0, 0x10]);
+            cpu.p |= Flag.CARRY;
+            const expectedPC = cpu.pc + 0x10 + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        })
+        it('RELATIVE with carry=0', () => {
+            let cpu = makeCPU([0xB0, 0x10]);
+            const expectedPC = cpu.pc + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        })
+    });
 
     describe('JMP', () => {
         it('ABSOLUTE', () => {

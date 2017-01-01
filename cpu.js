@@ -5,7 +5,8 @@ let AddrMode = {
     ABSOLUTE:   1,
     IMMEDIATE:  2,
     IMPLICIT:   3,
-    ZEROPAGE:   4
+    RELATIVE:   4,
+    ZEROPAGE:   5
 };
 
 let Flag = {
@@ -18,6 +19,15 @@ let Flag = {
 };
 
 let OpCodes = {
+    BCD: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = cpu.readPC();
+            if (cpu.p & Flag.CARRY) {
+                cpu.putPC(cpu.pc + offset);
+            }
+        }}
+    ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
             cpu.putPC(cpu.readPC16());
