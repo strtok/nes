@@ -1,5 +1,6 @@
 const debug = require('./debug')('nes:cpu');
 const _ = require('underscore');
+const printf = require('printf');
 
 let AddrMode = {
     ABSOLUTE:   1,
@@ -12,6 +13,7 @@ let AddrMode = {
     RELATIVE:   8,
     ZEROPAGE:   9,
     ZEROPAGE_X: 10,
+    ZEROPAGE_Y: 11
 };
 
 let Flag = {
@@ -184,26 +186,69 @@ class CPU {
         this.sp -= 2;
     }
 
-    disaseemble(addr) {
+    disassemble(addr) {
         try {
-            const op = this.memory.get8(addr);
-            const opstr = this.opMap[op]["opstr"];
-            return [opstr];
+            let disasm = [];
+            const op = this.opMap[this.memory.get8(addr)];
+            disasm.push(op.opstr);
+            switch (op.mode) {
+                case AddrMode.ABSOLUTE:
+                    disasm.push(printf("$%04X", this.memory.get8(addr + 1)));
+                    break;
+                case AddrMode.ABSOLUTE_X:
+                    disasm.push(printf("$%04X", this.memory.get8(addr + 1)));
+                    disasm.push("X");
+                    break;
+                case AddrMode.ABSOLUTE_Y:
+                    disasm.push(printf("$%04X", this.memory.get8(addr + 1)));
+                    disasm.push("Y");
+                    break;
+                case AddrMode.IMMEDIATE:
+                    disasm.push(printf("#%02X", this.memory.get8(addr + 1)));
+                    break;
+                case AddrMode.IMPLICIT:
+                    break;
+                case AddrMode.INDIRECT_X:
+                    disasm.push(printf("(%04X)", this.memory.get8(addr + 1)));
+                    disasm.push("X");
+                    break;
+                case AddrMode.INDIRECT_Y:
+                    disasm.push(printf("(%04X)", this.memory.get8(addr + 1)));
+                    disasm.push("Y");
+                    break;
+                case AddrMode.RELATIVE:
+                    disasm.push(printf("*$%02X", this.memory.get8(addr + 1)));
+                    break;
+                case AddrMode.ZEROPAGE:
+                    disasm.push(printf("$%02X", this.memory.get8(addr + 1)));
+                    break;
+                case AddrMode.ZEROPAGE_X:
+                    disasm.push(printf("$%02X", this.memory.get8(addr + 1)));
+                    disasm.push("X");
+                    break;
+                case AddrMode.ZEROPAGE_Y:
+                    disasm.push(printf("$%02X", this.memory.get8(addr + 1)));
+                    disasm.push("Y");
+                    break;
+            }
+
+            return disasm;
         } catch (e) {
-            return [];
+            return [
+                        printf("%02X", this.memory.get8(this.pc)),
+                        printf("%02X?", this.memory.get8(this.pc + 1)),
+                        printf("%02X?", this.memory.get8(this.pc + 2))
+                   ];
         }
     }
 
     execute() {
 
-        let disasm = this.disaseemble(this.pc);
+        const disasm = this.disassemble(this.pc);
 
-        debug("pc=%a (%b %b? %b?) %s a=%b x=%b y=%b sp=%b p=%b",
+        debug("pc=%a %s a=%b x=%b y=%b sp=%b p=%b",
             this.pc,
-            this.memory.get8(this.pc),
-            this.memory.get8(this.pc + 1),
-            this.memory.get8(this.pc + 2),
-            disasm,
+            disasm.toString(),
             this.a,
             this.x,
             this.y,
