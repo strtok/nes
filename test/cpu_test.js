@@ -33,6 +33,16 @@ describe('CPU', () => {
         })
     });
 
+    describe('CLC', () => {
+        it('IMPLICIT', () => {
+            // SEC then CLC
+            let cpu = makeCPU([0x38, 0x18]);
+            cpu.execute();
+            cpu.execute();
+            assert.equal(cpu.p & Flag.CARRY, 0);
+        })
+    });
+
     describe('JMP', () => {
         it('ABSOLUTE', () => {
             let cpu = makeCPU([0x4C, 0xBC, 0xCA]);

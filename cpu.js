@@ -28,6 +28,11 @@ let OpCodes = {
             }
         }}
     ],
+    CLC: [
+        { op: 0x18, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+            cpu.p &= ~Flag.CARRY;
+        }}
+    ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
             cpu.putPC(cpu.readPC16());
