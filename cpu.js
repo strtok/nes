@@ -3,7 +3,8 @@ const _ = require('underscore');
 
 let AddrMode = {
     ABSOLUTE: 1,
-    IMMEDIATE: 2
+    IMMEDIATE: 2,
+    ZEROPAGE: 3
 };
 
 let Flag = {
@@ -24,6 +25,12 @@ let OpCodes = {
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
             cpu.putX(memory.get8(cpu.pc + 1));
+            cpu.pc += 2;
+        }}
+    ],
+    STX: [
+        { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            memory.put8(memory.get8(cpu.pc + 1), cpu.x);
             cpu.pc += 2;
         }}
     ]

@@ -25,4 +25,14 @@ describe('memory', () => {
         assert.equal(memory.get8(0xC000), 0xFE);
     });
 
+    it('mirrors memory at $800-$2000', function() {
+        const memory = new Memory([new Uint8Array(16*1024)]);
+        memory.put8(0x0, 42);
+        assert.equal(memory.get8(0x0), 42);
+        assert.equal(memory.get8(0x800), 42);
+
+        memory.put8(0x801, 12);
+        assert.equal(memory.get8(0x801), 12);
+        assert.equal(memory.get8(0x1), 12);
+    });
 });
