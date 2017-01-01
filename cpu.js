@@ -2,9 +2,10 @@ const debug = require('debug')('nes:cpu');
 const _ = require('underscore');
 
 let AddrMode = {
-    ABSOLUTE: 1,
-    IMMEDIATE: 2,
-    ZEROPAGE: 3
+    ABSOLUTE:   1,
+    IMMEDIATE:  2,
+    IMPLICIT:   3,
+    ZEROPAGE:   4
 };
 
 let Flag = {
@@ -31,6 +32,10 @@ let OpCodes = {
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
             cpu.putX(cpu.readPC());
+        }}
+    ],
+    NOP: [
+        { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
         }}
     ],
     STX: [
