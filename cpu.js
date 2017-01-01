@@ -3,10 +3,15 @@ const _ = require('underscore');
 
 let AddrMode = {
     ABSOLUTE:   1,
-    IMMEDIATE:  2,
-    IMPLICIT:   3,
-    RELATIVE:   4,
-    ZEROPAGE:   5
+    ABSOLUTE_X: 2,
+    ABSOLUTE_Y: 3,
+    IMMEDIATE:  4,
+    IMPLICIT:   5,
+    INDIRECT_X: 6,
+    INDIRECT_Y: 7,
+    RELATIVE:   8,
+    ZEROPAGE:   9,
+    ZEROPAGE_X: 10,
 };
 
 let Flag = {
@@ -52,6 +57,24 @@ let OpCodes = {
             cpu.push16(cpu.pc + 1);
             cpu.putPC(cpu.readPC16());
         }}
+    ],
+    LDA: [
+        { op: 0xA9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+        }},
+        { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+        }},
+        { op: 0xB5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
+        }},
+        { op: 0xAD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+        }},
+        { op: 0xBD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
+        }},
+        { op: 0xB9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
+        }},
+        { op: 0xA1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
+        }},
+        { op: 0xB1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
+        }},
     ],
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
