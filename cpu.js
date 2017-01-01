@@ -1,4 +1,17 @@
 const debug = require('debug')('nes:cpu');
+const _ = require('underscore');
+
+let AddrMode = {
+    ABSOLUTE: 1
+}
+
+let OpCodes = {
+    JMP: [
+        { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
+                cpu.register.pc = 0x0;
+        }}
+    ]
+};
 
 class CPU {
     constructor(memory) {
@@ -11,10 +24,41 @@ class CPU {
             x: 0x00,      // X (general purpose)
             y: 0x00       // Y (general purpose)
         }
+
+        // build opcode -> exe map
+        this.opMap = Array();
+        _.forEach(OpCodes, (it) => {
+            _.forEach(it, (it) => {
+                this.opMap[it.op] = it.exe;
+            });
+        });
     }
 
     execute() {
-        throw new Error('invalid op-code');
+        debug("pc=$%s (%s %s? %s?) a=%s x=%s y=%s sp=%s p=%s",
+            this.register.pc.toString(16),
+            this.memory.get8(this.register.pc).toString(16),
+            this.memory.get8(this.register.pc + 1).toString(16),
+            this.memory.get8(this.register.pc + 2).toString(16),
+            this.register.a.toString(16),
+            this.register.x.toString(16),
+            this.register.y.toString(16),
+            this.register.sp.toString(16),
+            this.register.p.toString(16)
+        );
+
+        let op = this.memory.get8(this.register.pc);
+
+        try {
+            this.opMap[op](this);
+        } catch (e) {
+            if (e instanceof TypeError) {
+                debug("invalid op code %s", op.toString(16));
+                throw new Error("invalid op code");
+            } else {
+                throw e;
+            }
+        }
     }
 };
 

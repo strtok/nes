@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "debug": "^2.6.0",
+    "format": "^0.2.2",
     "underscore": "latest",
     "base64-js": "latest"
   },
