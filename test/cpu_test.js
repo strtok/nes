@@ -76,6 +76,14 @@ describe('CPU', () => {
         })
     });
 
+    describe('LDA', () => {
+        it('IMMEDIATE', () => {
+            let cpu = makeCPU([0xA9, 0xEF]);
+            cpu.execute();
+            assert.equal(cpu.a, 0xEF);
+        })
+    });
+
     describe('LDX', () => {
         it('IMMEDIATE', () => {
             let cpu = makeCPU([0xA2, 0xEF]);

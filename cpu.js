@@ -60,6 +60,7 @@ let OpCodes = {
     ],
     LDA: [
         { op: 0xA9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+            cpu.putA(cpu.readPC());
         }},
         { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
         }},
