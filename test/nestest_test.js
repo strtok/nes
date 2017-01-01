@@ -12,7 +12,11 @@ describe('nestest', () => {
         let memory = new Memory(rom.prgRom);
         let cpu = new CPU(memory);
         while(true) {
-            cpu.execute();
+            try {
+                cpu.execute();
+            } catch (e) {
+                assert.fail(1,0,e);
+            }
         }
     });
 });

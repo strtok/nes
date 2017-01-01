@@ -7,8 +7,8 @@ let AddrMode = {
 
 let OpCodes = {
     JMP: [
-        { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
-                cpu.register.pc = cpu.memory.get16(cpu.register.pc + 1);
+        { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
+                cpu.register.pc = memory.get16(cpu.register.pc + 1);
         }}
     ]
 };
@@ -50,7 +50,7 @@ class CPU {
         let op = this.memory.get8(this.register.pc);
 
         try {
-            this.opMap[op](this);
+            this.opMap[op](this, this.memory);
         } catch (e) {
             if (e instanceof TypeError) {
                 debug("invalid op code %s", op.toString(16));
