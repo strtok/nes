@@ -13,12 +13,12 @@ describe('nestest', () => {
         let cpu = new CPU(memory);
 
         for (let i = 0; i < log.length; i++) {
-            assert.equal(cpu.register.pc, log[i].pc);
-            assert.equal(cpu.register.a, log[i].a);
-            assert.equal(cpu.register.x, log[i].x);
-            assert.equal(cpu.register.y, log[i].y);
-            assert.equal(cpu.register.sp, log[i].sp);
-            assert.equal(cpu.register.p, log[i].p);
+            assert.equal(cpu.pc, log[i].pc);
+            assert.equal(cpu.a, log[i].a);
+            assert.equal(cpu.x, log[i].x);
+            assert.equal(cpu.y, log[i].y);
+            assert.equal(cpu.sp, log[i].sp);
+            assert.equal(cpu.p, log[i].p);
             try {
                 cpu.execute();
             } catch (e) {

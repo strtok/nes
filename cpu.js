@@ -9,13 +9,13 @@ let AddrMode = {
 let OpCodes = {
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
-            cpu.register.pc = memory.get16(cpu.register.pc + 1);
+            cpu.pc = memory.get16(cpu.pc + 1);
         }}
     ],
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
-            cpu.register.x = memory.get8(cpu.register.pc + 1);
-            cpu.register.pc += 2;
+            cpu.x = memory.get8(cpu.pc + 1);
+            cpu.pc += 2;
         }}
     ]
 };
@@ -23,14 +23,14 @@ let OpCodes = {
 class CPU {
     constructor(memory) {
         this.memory = memory;
-        this.register = {
-            p: 0x24,      // Processor status flags
-            pc: 0xC000,   // Program Counter
-            a: 0x00,      // Accumulator
-            sp: 0xFD,     // Stack Pointer
-            x: 0x00,      // X (general purpose)
-            y: 0x00       // Y (general purpose)
-        }
+
+        // registers
+        this.p = 0x24;      // Processor status flags
+        this.pc = 0xC000;   // Program Counter
+        this.a = 0x00;      // Accumulator
+        this.sp = 0xFD;     // Stack Pointer
+        this.x = 0x00;      // X (general purpose)
+        this.y = 0x00;       // Y (general purpose)
 
         // build opcode -> exe map
         this.opMap = Array();
@@ -43,18 +43,18 @@ class CPU {
 
     execute() {
         debug("pc=$%s (%s %s? %s?) a=%s x=%s y=%s sp=%s p=%s",
-            this.register.pc.toString(16),
-            this.memory.get8(this.register.pc).toString(16),
-            this.memory.get8(this.register.pc + 1).toString(16),
-            this.memory.get8(this.register.pc + 2).toString(16),
-            this.register.a.toString(16),
-            this.register.x.toString(16),
-            this.register.y.toString(16),
-            this.register.sp.toString(16),
-            this.register.p.toString(16)
+            this.pc.toString(16),
+            this.memory.get8(this.pc).toString(16),
+            this.memory.get8(this.pc + 1).toString(16),
+            this.memory.get8(this.pc + 2).toString(16),
+            this.a.toString(16),
+            this.x.toString(16),
+            this.y.toString(16),
+            this.sp.toString(16),
+            this.p.toString(16)
         );
 
-        let op = this.memory.get8(this.register.pc);
+        let op = this.memory.get8(this.pc);
 
         try {
             this.opMap[op](this, this.memory);
