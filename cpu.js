@@ -36,7 +36,7 @@ let OpCodes = {
             }
         }}
     ],
-    BCD: [
+    BCS: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
             const offset = cpu.readPC();
