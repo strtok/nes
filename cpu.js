@@ -24,9 +24,8 @@ let OpCodes = {
     ],
     JSR: [
         { op: 0x20, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu, memory) {
-            const tgt = cpu.readPC16();
-            cpu.push16(cpu.pc - 1);
-            cpu.pc = tgt;
+            cpu.push16(cpu.pc + 1);
+            cpu.putPC(cpu.readPC16());
         }}
     ],
     LDX: [
