@@ -19,6 +19,15 @@ let Flag = {
 };
 
 let OpCodes = {
+    BCC: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = cpu.readPC();
+            if ((cpu.p & Flag.CARRY) == 0) {
+                cpu.putPC(cpu.pc + offset);
+            }
+        }}
+    ],
     BCD: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
