@@ -22,6 +22,13 @@ let OpCodes = {
             cpu.putPC(cpu.readPC16());
         }}
     ],
+    JSR: [
+        { op: 0x20, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu, memory) {
+            const tgt = cpu.readPC16();
+            cpu.push16(cpu.pc - 1);
+            cpu.pc = tgt;
+        }}
+    ],
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
             cpu.putX(cpu.readPC());
@@ -96,6 +103,17 @@ class CPU {
 
     putPC(val) {
         this.pc = val;
+    }
+
+    // push value on stack
+    push8(val) {
+        this.memory.put8(this.sp + 0x100, val);
+        this.sp--;
+    }
+
+    push16(val) {
+        this.memory.put16(this.sp + 0x100, val);
+        this.sp -= 2;
     }
 
     execute() {

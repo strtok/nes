@@ -30,6 +30,11 @@ class Memory {
         throw Error("invalid access $" + addr.toString(16));
     }
 
+    put16(addr, val) {
+        this.put8(addr, val & 0xFF);
+        this.put8(addr+1, val >> 8 & 0xFF);
+    }
+
     get8(addr) {
         // RAM
         if (addr < 0x800) {

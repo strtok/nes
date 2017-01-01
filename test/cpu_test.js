@@ -20,9 +20,18 @@ describe('CPU', () => {
 
     describe('JMP', () => {
         it('ABSOLUTE', () => {
-            let cpu = makeCPU([0x4C, 0xCD, 0xAB]);
+            let cpu = makeCPU([0x4C, 0xBC, 0xCA]);
             cpu.execute();
-            assert.equal(cpu.pc, 0xABCD);
+            assert.equal(cpu.pc, 0xCABC);
+        })
+    });
+
+    describe('JSR', () => {
+        it('ABSOLUTE', () => {
+            let cpu = makeCPU([0x20, 0xBC, 0xCA]);
+            cpu.execute();
+            assert.equal(cpu.pc, 0xCABC);
+            assert.equal(cpu.memory.get16(0x01FD), 0xC002);
         })
     });
 
