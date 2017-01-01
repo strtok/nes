@@ -217,6 +217,7 @@ class CPU {
                     disasm.push(printf("(%04X)", this.memory.get8(addr + 1)));
                     disasm.push("Y");
                     break;
+                // TODO: correctly print sign for relative addressing
                 case AddrMode.RELATIVE:
                     disasm.push(printf("*$%02X", this.memory.get8(addr + 1)));
                     break;
