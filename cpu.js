@@ -29,7 +29,7 @@ let OpCodes = {
         { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
             const offset = cpu.readPC();
             if ((cpu.p & Flag.CARRY) == 0) {
-                cpu.putPC(cpu.pc + offset);
+                cpu.pc = cpu.pc + offset;
             }
         }}
     ],
@@ -38,7 +38,7 @@ let OpCodes = {
         { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
             const offset = cpu.readPC();
             if (cpu.p & Flag.CARRY) {
-                cpu.putPC(cpu.pc + offset);
+                cpu.pc = cpu.pc + offset;
             }
         }}
     ],
@@ -49,18 +49,18 @@ let OpCodes = {
     ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
-            cpu.putPC(cpu.readPC16());
+            cpu.pc = cpu.readPC16();
         }}
     ],
     JSR: [
         { op: 0x20, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu, memory) {
             cpu.push16(cpu.pc + 1);
-            cpu.putPC(cpu.readPC16());
+            cpu.pc = cpu.readPC16();
         }}
     ],
     LDA: [
         { op: 0xA9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
-            cpu.putA(cpu.readPC());
+            cpu.a = cpu.readPC();
         }},
         { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
         }},
@@ -79,7 +79,7 @@ let OpCodes = {
     ],
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
-            cpu.putX(cpu.readPC());
+            cpu.x = cpu.readPC();
         }}
     ],
     NOP: [
@@ -105,10 +105,10 @@ class CPU {
         // registers
         this.p = 0x24;      // Processor status flags
         this.pc = 0xC000;   // Program Counter
-        this.a = 0x00;      // Accumulator
+        this._a = 0x00;      // Accumulator
         this.sp = 0xFD;     // Stack Pointer
-        this.x = 0x00;      // X (general purpose)
-        this.y = 0x00;       // Y (general purpose)
+        this._x = 0x00;      // X (general purpose)
+        this._y = 0x00;       // Y (general purpose)
 
         // build opcode -> exe map
         this.opMap = Array();
@@ -119,31 +119,43 @@ class CPU {
         });
     }
 
-    putX(val) {
+    set x(val) {
         if (val & Flag.NEGATIVE) {
             this.p |= Flag.NEGATIVE;
         } else if (val == 0) {
             this.p |= Flag.ZERO;
         }
-        this.x = val;
+        this._x = val;
     }
 
-    putY(val) {
-        if (val & Flag.NEGATIVE) {
-            this.p |= Flag.NEGATIVE;
-        } else if (val == 0) {
-            this.p |= Flag.ZERO;
-        }
-        this.y = val;
+    get x() {
+        return this._x;
     }
 
-    putA(val) {
+    set y(val) {
         if (val & Flag.NEGATIVE) {
             this.p |= Flag.NEGATIVE;
         } else if (val == 0) {
             this.p |= Flag.ZERO;
         }
-        this.a = val;
+        this._y = val;
+    }
+
+    get y() {
+        return this._y;
+    }
+
+    set a(val) {
+        if (val & Flag.NEGATIVE) {
+            this.p |= Flag.NEGATIVE;
+        } else if (val == 0) {
+            this.p |= Flag.ZERO;
+        }
+        this._a = val;
+    }
+
+    get a() {
+        return this._a;
     }
 
     // read 1 byte at PC and increment PC
@@ -156,10 +168,6 @@ class CPU {
         let pc = this.pc;
         this.pc += 2;
         return this.memory.get16(pc);
-    }
-
-    putPC(val) {
-        this.pc = val;
     }
 
     // push value on stack
