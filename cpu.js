@@ -19,19 +19,17 @@ let Flag = {
 let OpCodes = {
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
-            cpu.putPC(memory.get16(cpu.pc + 1));
+            cpu.putPC(cpu.readPC16());
         }}
     ],
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
-            cpu.putX(memory.get8(cpu.pc + 1));
-            cpu.pc += 2;
+            cpu.putX(cpu.readPC());
         }}
     ],
     STX: [
         { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            memory.put8(memory.get8(cpu.pc + 1), cpu.x);
-            cpu.pc += 2;
+            memory.put8(cpu.readPC(), cpu.x);
         }}
     ]
 };
@@ -52,7 +50,7 @@ class CPU {
         this.opMap = Array();
         _.forEach(OpCodes, (it) => {
             _.forEach(it, (it) => {
-                this.opMap[it.op] = it.exe;
+                this.opMap[it.op] = it;
             });
         });
     }
@@ -84,6 +82,18 @@ class CPU {
         this.a = val;
     }
 
+    // read 1 byte at PC and increment PC
+    readPC() {
+        return this.memory.get8(this.pc++);
+    }
+
+    // read 2 bytes at PC and increment PC
+    readPC16() {
+        let pc = this.pc;
+        this.pc += 2;
+        return this.memory.get16(pc);
+    }
+
     putPC(val) {
         this.pc = val;
     }
@@ -101,13 +111,14 @@ class CPU {
             this.p.toString(16)
         );
 
-        let op = this.memory.get8(this.pc);
+        let op = this.readPC();
+        const inst = this.opMap[op];
 
         try {
-            this.opMap[op](this, this.memory);
+            inst.exe(this, this.memory);
         } catch (e) {
             if (e instanceof TypeError) {
-                debug("invalid op code %s", op.toString(16));
+                debug("invalid op code %s (%s)", op.toString(16), e.toString());
                 throw new Error("invalid op code");
             } else {
                 throw e;
