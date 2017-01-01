@@ -117,3 +117,4 @@ class CPU {
 };
 
 module.exports.CPU = CPU;
+module.exports.Flag = Flag;
