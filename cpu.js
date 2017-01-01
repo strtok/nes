@@ -112,9 +112,12 @@ class CPU {
 
         // build opcode -> exe map
         this.opMap = Array();
-        _.forEach(OpCodes, (it) => {
-            _.forEach(it, (it) => {
-                this.opMap[it.op] = it;
+        _.forEach(_.pairs(OpCodes), (it) => {
+            let opstr = it[0];
+            _.forEach(it[1], (it) => {
+                let map = _.clone(it);
+                map["opstr"] = opstr;
+                this.opMap[map.op] = map;
             });
         });
     }
@@ -181,12 +184,26 @@ class CPU {
         this.sp -= 2;
     }
 
+    disaseemble(addr) {
+        try {
+            const op = this.memory.get8(addr);
+            const opstr = this.opMap[op]["opstr"];
+            return [opstr];
+        } catch (e) {
+            return [];
+        }
+    }
+
     execute() {
-        debug("pc=%a (%b %b? %b?) a=%b x=%b y=%b sp=%b p=%b",
+
+        let disasm = this.disaseemble(this.pc);
+
+        debug("pc=%a (%b %b? %b?) %s a=%b x=%b y=%b sp=%b p=%b",
             this.pc,
             this.memory.get8(this.pc),
             this.memory.get8(this.pc + 1),
             this.memory.get8(this.pc + 2),
+            disasm,
             this.a,
             this.x,
             this.y,
