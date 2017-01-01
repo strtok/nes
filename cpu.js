@@ -38,6 +38,11 @@ let OpCodes = {
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
         }}
     ],
+    SEC: [
+        { op: 0x38, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu, memory) {
+            cpu.p |= Flag.CARRY;
+        }}
+    ],
     STX: [
         { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
             memory.put8(cpu.readPC(), cpu.x);

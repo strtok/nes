@@ -43,13 +43,21 @@ describe('CPU', () => {
         })
     });
 
+    describe('SEC', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0x38]);
+            cpu.execute();
+            assert.equal(cpu.p & Flag.CARRY, Flag.CARRY);
+        })
+    });
+
     describe('STX', () => {
         it('ZEROPAGE', () => {
             let cpu = makeCPU([0x86, 0x00]);
             cpu.x = 0x42;
             cpu.execute();
             assert.equal(cpu.memory.get8(0x00), 0x42);
-            assert.isNotTrue(cpu.p & Flag.ZERO);
+            assert.equal(cpu.p & Flag.ZERO, 0);
         })
     });
 
