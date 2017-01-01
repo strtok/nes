@@ -174,16 +174,16 @@ class CPU {
     }
 
     execute() {
-        debug("pc=$%s (%s %s? %s?) a=%s x=%s y=%s sp=%s p=%s",
-            this.pc.toString(16),
-            this.memory.get8(this.pc).toString(16),
-            this.memory.get8(this.pc + 1).toString(16),
-            this.memory.get8(this.pc + 2).toString(16),
-            this.a.toString(16),
-            this.x.toString(16),
-            this.y.toString(16),
-            this.sp.toString(16),
-            this.p.toString(16)
+        debug("pc=%a (%b %b? %b?) a=%b x=%b y=%b sp=%b p=%b",
+            this.pc,
+            this.memory.get8(this.pc),
+            this.memory.get8(this.pc + 1),
+            this.memory.get8(this.pc + 2),
+            this.a,
+            this.x,
+            this.y,
+            this.sp,
+            this.p
         );
 
         let op = this.readPC();
@@ -193,7 +193,7 @@ class CPU {
             inst.exe(this, this.memory);
         } catch (e) {
             if (e instanceof TypeError) {
-                debug("invalid op code %s (%s)", op.toString(16), e.toString());
+                debug("invalid op code %b (%s)", op, e.toString());
                 this.memory.debugPrintStack();
                 throw new Error("invalid op code");
             } else {

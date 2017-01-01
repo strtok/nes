@@ -20,6 +20,7 @@ class Memory {
     }
 
     put8(addr, val) {
+        debug("put8 %a %b", addr, val);
         if (addr < 0x800) {
             this.ram[addr] = val;
             return;
@@ -63,13 +64,12 @@ class Memory {
     }
 
     debugPrint(start, end) {
-        debug("dumping $%s to $%s", start.toString(16), end.toString(16));
+        debug("dumping %a to %a", start, end);
         let dumped = new Uint8Array(end-start);
         for (let i = start; i <= end; i++) {
             dumped[i] = this.get8(i);
         }
         hex(dumped);
-        debug("foo");
     }
 };
 
