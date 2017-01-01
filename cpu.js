@@ -1,6 +1,7 @@
 const debug = require('./debug')('nes:cpu');
 const _ = require('underscore');
 const printf = require('printf');
+const rightpad = require('rightpad');
 
 let AddrMode = {
     ABSOLUTE:   1,
@@ -244,7 +245,7 @@ class CPU {
 
     execute() {
 
-        const disasm = this.disassemble(this.pc);
+        const disasm = rightpad(this.disassemble(this.pc).toString(), 10);
 
         debug("pc=%a %s a=%b x=%b y=%b sp=%b p=%b",
             this.pc,

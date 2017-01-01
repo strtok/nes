@@ -2,11 +2,12 @@
   "name": "application-name",
   "version": "0.0.1",
   "dependencies": {
+    "base64-js": "latest",
     "debug": "^2.6.0",
-    "printf": "latest",
     "hex": "^0.1.0",
-    "underscore": "latest",
-    "base64-js": "latest"
+    "rightpad": "^1.0.1",
+    "printf": "latest",
+    "underscore": "latest"
   },
   "devDependencies": {
     "browserify": "^13.1.1",
