@@ -2,13 +2,20 @@ const debug = require('debug')('nes:cpu');
 const _ = require('underscore');
 
 let AddrMode = {
-    ABSOLUTE: 1
+    ABSOLUTE: 1,
+    IMMEDIATE: 2
 }
 
 let OpCodes = {
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
-                cpu.register.pc = memory.get16(cpu.register.pc + 1);
+            cpu.register.pc = memory.get16(cpu.register.pc + 1);
+        }}
+    ],
+    LDX: [
+        { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+            cpu.register.x = memory.get8(cpu.register.pc + 1);
+            cpu.register.pc += 2;
         }}
     ]
 };
