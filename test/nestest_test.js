@@ -1,5 +1,4 @@
 let assert = require('chai').assert;
-let debug = require('debug')('nes:nestest');
 let Rom = require('../rom').Rom;
 let Memory = require('../memory').Memory;
 let CPU = require('../cpu').CPU;

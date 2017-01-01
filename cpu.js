@@ -1,4 +1,4 @@
-const debug = require('debug')('nes:cpu');
+const debug = require('./debug')('nes:cpu');
 const _ = require('underscore');
 
 let AddrMode = {
@@ -194,6 +194,7 @@ class CPU {
         } catch (e) {
             if (e instanceof TypeError) {
                 debug("invalid op code %s (%s)", op.toString(16), e.toString());
+                this.memory.debugPrintStack();
                 throw new Error("invalid op code");
             } else {
                 throw e;

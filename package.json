@@ -4,6 +4,7 @@
   "dependencies": {
     "debug": "^2.6.0",
     "format": "^0.2.2",
+    "hex": "^0.1.0",
     "underscore": "latest",
     "base64-js": "latest"
   },

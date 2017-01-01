@@ -1,4 +1,5 @@
-debug = require('debug')('nes:memory');
+debug = require('./debug')('nes:memory');
+hex = require('hex');
 
 class Memory {
     constructor(prgRom) {
@@ -55,6 +56,20 @@ class Memory {
 
     get16(addr) {
         return (this.get8(addr+1) << 8) | this.get8(addr);
+    }
+
+    debugPrintStack() {
+        this.debugPrint(0x100, 0x1FF);
+    }
+
+    debugPrint(start, end) {
+        debug("dumping $%s to $%s", start.toString(16), end.toString(16));
+        let dumped = new Uint8Array(end-start);
+        for (let i = start; i <= end; i++) {
+            dumped[i] = this.get8(i);
+        }
+        hex(dumped);
+        debug("foo");
     }
 };
 
