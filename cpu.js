@@ -123,7 +123,7 @@ class CPU {
         this._y = 0x00;       // Y (general purpose)
 
         // build opcode -> exe map
-        this.opMap = Array();
+        this.opMap = [];
         _.forEach(_.pairs(OpCodes), (it) => {
             let opstr = it[0];
             _.forEach(it[1], (it) => {
@@ -259,9 +259,9 @@ class CPU {
 
         const disasm = rightpad(this.disassemble(this.pc).toString(), 10);
 
-        debug("pc=%a %s a=%b x=%b y=%b sp=%b p=%b",
+        debug("%a %s a=%b x=%b y=%b sp=%b p=%b",
             this.pc,
-            disasm.toString(),
+            disasm,
             this.a,
             this.x,
             this.y,
@@ -284,7 +284,7 @@ class CPU {
             }
         }
     }
-};
+}
 
 module.exports.CPU = CPU;
 module.exports.Flag = Flag;

@@ -1,10 +1,6 @@
 let dbg = require('debug');
 let printf = require('printf');
 
-function hex(val) {
-    return format("%04x", val).slice(2);
-}
-
 module.exports = (cat) => {
     // 1 byte uppercase hex
     dbg.formatters.b = (val) => {

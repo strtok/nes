@@ -1,5 +1,5 @@
-debug = require('./debug')('nes:memory');
-hex = require('hex');
+let debug = require('./debug')('nes:memory');
+let hex = require('hex');
 
 class Memory {
     constructor(prgRom) {
@@ -71,6 +71,6 @@ class Memory {
         }
         hex(dumped);
     }
-};
+}
 
 module.exports.Memory = Memory;
