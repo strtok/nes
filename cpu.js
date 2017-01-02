@@ -45,6 +45,15 @@ let OpCodes = {
             }
         }}
     ],
+    BEQ: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0xF0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = cpu.readPC();
+            if (cpu.p & Flag.ZERO) {
+                cpu.pc = cpu.pc + offset;
+            }
+        }}
+    ],
     CLC: [
         { op: 0x18, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
             cpu.p &= ~Flag.CARRY;
@@ -125,12 +134,22 @@ class CPU {
         });
     }
 
-    set x(val) {
+    setNegativeAndZeroFlags(val) {
         if (val & Flag.NEGATIVE) {
             this.p |= Flag.NEGATIVE;
-        } else if (val == 0) {
-            this.p |= Flag.ZERO;
+        } else {
+            this.p &= ~Flag.NEGATIVE;
         }
+
+        if (val == 0) {
+            this.p |= Flag.ZERO;
+        } else {
+            this.p &= ~Flag.ZERO;
+        }
+    }
+
+    set x(val) {
+        this.setNegativeAndZeroFlags(val);
         this._x = val;
     }
 
@@ -139,11 +158,7 @@ class CPU {
     }
 
     set y(val) {
-        if (val & Flag.NEGATIVE) {
-            this.p |= Flag.NEGATIVE;
-        } else if (val == 0) {
-            this.p |= Flag.ZERO;
-        }
+        this.setNegativeAndZeroFlags(val);
         this._y = val;
     }
 
@@ -152,11 +167,7 @@ class CPU {
     }
 
     set a(val) {
-        if (val & Flag.NEGATIVE) {
-            this.p |= Flag.NEGATIVE;
-        } else if (val == 0) {
-            this.p |= Flag.ZERO;
-        }
+        this.setNegativeAndZeroFlags(val);
         this._a = val;
     }
 
