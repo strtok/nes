@@ -216,16 +216,16 @@ class CPU {
                     disasm.push("Y");
                     break;
                 case AddrMode.IMMEDIATE:
-                    disasm.push(printf("#%02X", this.memory.get8(addr + 1)));
+                    disasm.push(printf("#$%02X", this.memory.get8(addr + 1)));
                     break;
                 case AddrMode.IMPLICIT:
                     break;
                 case AddrMode.INDIRECT_X:
-                    disasm.push(printf("(%04X)", this.memory.get8(addr + 1)));
+                    disasm.push(printf("($%04X)", this.memory.get8(addr + 1)));
                     disasm.push("X");
                     break;
                 case AddrMode.INDIRECT_Y:
-                    disasm.push(printf("(%04X)", this.memory.get8(addr + 1)));
+                    disasm.push(printf("($%04X)", this.memory.get8(addr + 1)));
                     disasm.push("Y");
                     break;
                 // TODO: correctly print sign for relative addressing
