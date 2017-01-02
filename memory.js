@@ -1,5 +1,6 @@
 let debug = require('./debug')('nes:memory');
 let hex = require('hex');
+var printf = require("printf");
 
 class Memory {
     constructor(prgRom) {
@@ -29,7 +30,7 @@ class Memory {
             return;
         }
 
-        throw Error("invalid access $" + addr.toString(16));
+        throw Error(printf("invalid access of memory location $%02X", addr));
     }
 
     put16(addr, val) {
@@ -64,7 +65,7 @@ class Memory {
     }
 
     debugPrint(start, end) {
-        debug("dumping %a to %a", start, end);
+        debug("dumping $%a to $%a", start, end);
         let dumped = new Uint8Array(end-start);
         for (let i = start; i <= end; i++) {
             dumped[i] = this.get8(i);

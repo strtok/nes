@@ -248,9 +248,9 @@ class CPU {
             return disasm;
         } catch (e) {
             return [
-                        printf("%02X", this.memory.get8(this.pc)),
-                        printf("%02X?", this.memory.get8(this.pc + 1)),
-                        printf("%02X?", this.memory.get8(this.pc + 2))
+                        printf("$%02X", this.memory.get8(this.pc)),
+                        printf("$%02X", this.memory.get8(this.pc + 1)),
+                        printf("$%02X", this.memory.get8(this.pc + 2))
                    ];
         }
     }
@@ -259,7 +259,7 @@ class CPU {
 
         const disasm = rightpad(this.disassemble(this.pc).toString(), 10);
 
-        debug("%a %s a=%b x=%b y=%b sp=%b p=%b",
+        debug("$%a %s a=$%b x=$%b y=$%b sp=$%b p=$%b",
             this.pc,
             disasm,
             this.a,
@@ -276,7 +276,7 @@ class CPU {
             inst.exe(this, this.memory);
         } catch (e) {
             if (e instanceof TypeError) {
-                debug("invalid op code %b (%s)", op, e.toString());
+                debug("invalid op code $%b (%s)", op, e.toString());
                 this.memory.debugPrintStack();
                 throw new Error("invalid op code");
             } else {

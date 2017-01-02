@@ -9,7 +9,7 @@ module.exports = (cat) => {
 
     // 2 byte address uppercase hex
     dbg.formatters.a = (val) => {
-        return printf("$%04X", val);
+        return printf("%04X", val);
     };
 
     let log = dbg(cat);
