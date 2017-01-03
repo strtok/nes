@@ -49,8 +49,17 @@ let OpCodes = {
     BEQ: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xF0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readPC();
+            const offset = tc(cpu.readPC());
             if (cpu.p & Flag.ZERO) {
+                cpu.pc = cpu.pc + offset;
+            }
+        }}
+    ],
+    BNE: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = tc(cpu.readPC());
+            if (!(cpu.p & Flag.ZERO)) {
                 cpu.pc = cpu.pc + offset;
             }
         }}

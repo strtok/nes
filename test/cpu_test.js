@@ -66,6 +66,22 @@ describe('CPU', () => {
         });
     });
 
+    describe('BNE', () => {
+        it('RELATIVE with zero=0', () => {
+            let cpu = makeCPU([0xF0, 0x10]);
+            const expectedPC = cpu.pc + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+        it('RELATIVE with zero=1', () => {
+            let cpu = makeCPU([0xF0, 0x10]);
+            cpu.p |= Flag.ZERO;
+            const expectedPC = cpu.pc + + 0x10 + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+    });
+
     describe('CLC', () => {
         it('IMPLICIT', () => {
             // SEC then CLC
