@@ -2,6 +2,7 @@ const debug = require('./debug')('nes:cpu');
 const _ = require('underscore');
 const printf = require('printf');
 const rightpad = require('rightpad');
+var tc = require("./math.js").tc;
 
 let AddrMode = {
     ABSOLUTE:   1,
@@ -134,14 +135,6 @@ class CPU {
         });
     }
 
-    static tc(val) {
-        if (val & 0b10000000) {
-            return -((~val + 1) & 0xFF);
-        } else {
-            return val;
-        }
-    }
-
     setNegativeAndZeroFlags(val) {
         if (val & Flag.NEGATIVE) {
             this.p |= Flag.NEGATIVE;
@@ -236,9 +229,12 @@ class CPU {
                     disasm.push(printf("($%04X)", this.memory.get8(addr + 1)));
                     disasm.push("Y");
                     break;
-                // TODO: correctly print sign for relative addressing
                 case AddrMode.RELATIVE:
-                    disasm.push(printf("*$%02X", this.memory.get8(addr + 1)));
+                    const val = tc(this.memory.get8(addr + 1));
+                    if (val > 0)
+                        disasm.push(printf("*+$%02X", val));
+                    else
+                        disasm.push(printf("*-$%02X", ~val));
                     break;
                 case AddrMode.ZEROPAGE:
                     disasm.push(printf("$%02X", this.memory.get8(addr + 1)));
