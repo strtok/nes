@@ -134,6 +134,14 @@ class CPU {
         });
     }
 
+    static tc(val) {
+        if (val & 0b10000000) {
+            return -((~val + 1) & 0xFF);
+        } else {
+            return val;
+        }
+    }
+
     setNegativeAndZeroFlags(val) {
         if (val & Flag.NEGATIVE) {
             this.p |= Flag.NEGATIVE;

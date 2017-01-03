@@ -17,6 +17,16 @@ describe('CPU', () => {
         assert.throws(cpu.execute, Error);
     });
 
+    it('twos complement', () => {
+        assert.equal(CPU.tc(0b00000001), 1);
+        assert.equal(CPU.tc(0b00000010), 2);
+        assert.equal(CPU.tc(0b01111111), 127);
+
+        assert.equal(CPU.tc(0b10000000), -128);
+        assert.equal(CPU.tc(0b11111111), -1);
+        assert.equal(CPU.tc(0b11111110), -2);
+    });
+
     describe('BCC', () => {
         it('RELATIVE with carry=1', () => {
             let cpu = makeCPU([0x90, 0x10]);
