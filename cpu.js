@@ -113,6 +113,11 @@ let OpCodes = {
             cpu.p |= Flag.CARRY;
         }}
     ],
+    STA: [
+        { op: 0x85, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            memory.put8(cpu.readPC(), cpu.a);
+        }}
+    ],
     STX: [
         { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
             memory.put8(cpu.readPC(), cpu.x);

@@ -133,6 +133,16 @@ describe('CPU', () => {
         })
     });
 
+    describe('STA', () => {
+        it('ZEROPAGE', () => {
+            let cpu = makeCPU([0x85, 0x00]);
+            cpu.a = 0x42;
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x00), 0x42);
+            assert.equal(cpu.p & Flag.ZERO, 0);
+        })
+    });
+
     describe('STX', () => {
         it('ZEROPAGE', () => {
             let cpu = makeCPU([0x86, 0x00]);
