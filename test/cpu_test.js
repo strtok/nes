@@ -82,6 +82,38 @@ describe('CPU', () => {
         });
     });
 
+    describe('BVC', () => {
+        it('RELATIVE with overflow=0', () => {
+            let cpu = makeCPU([0x50, 0x10]);
+            const expectedPC = cpu.pc + 0x10 + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+        it('RELATIVE with overflow=1', () => {
+            let cpu = makeCPU([0x50, 0x10]);
+            cpu.p |= Flag.OVERFLOW;
+            const expectedPC = cpu.pc + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+    });
+
+    describe('BVS', () => {
+        it('RELATIVE with overflow=0', () => {
+            let cpu = makeCPU([0x70, 0x10]);
+            const expectedPC = cpu.pc + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+        it('RELATIVE with overflow=1', () => {
+            let cpu = makeCPU([0x70, 0x10]);
+            cpu.p |= Flag.OVERFLOW;
+            const expectedPC = cpu.pc + 0x10 + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+    });
+
     describe('BIT', () => {
         it('ZEROPAGE with mask=0xFF and mem=OVERFLOW', () => {
             let cpu = makeCPU([0x24, 0x00]);

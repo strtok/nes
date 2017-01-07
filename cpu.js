@@ -64,6 +64,24 @@ let OpCodes = {
             }
         }}
     ],
+    BVC: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0x50, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = tc(cpu.readPC());
+            if (!(cpu.p & Flag.OVERFLOW)) {
+                cpu.pc = cpu.pc + offset;
+            }
+        }}
+    ],
+    BVS: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0x70, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = tc(cpu.readPC());
+            if (cpu.p & Flag.OVERFLOW) {
+                cpu.pc = cpu.pc + offset;
+            }
+        }}
+    ],
     BIT: [
         { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
             const m = memory.get8(cpu.readPC());
