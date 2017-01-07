@@ -64,6 +64,24 @@ let OpCodes = {
             }
         }}
     ],
+    BMI: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0x30, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = tc(cpu.readPC());
+            if (cpu.p & Flag.NEGATIVE) {
+                cpu.pc = cpu.pc + offset;
+            }
+        }}
+    ],
+    BPL: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0x10, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+            const offset = tc(cpu.readPC());
+            if (!(cpu.p & Flag.NEGATIVE)) {
+                cpu.pc = cpu.pc + offset;
+            }
+        }}
+    ],
     BVC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x50, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {

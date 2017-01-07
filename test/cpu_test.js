@@ -82,6 +82,38 @@ describe('CPU', () => {
         });
     });
 
+    describe('BMI', () => {
+        it('RELATIVE with negative=0', () => {
+            let cpu = makeCPU([0x30, 0x20]);
+            const expectedPC = cpu.pc + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+        it('RELATIVE with negative=1', () => {
+            let cpu = makeCPU([0x30, 0x20]);
+            cpu.p |= Flag.NEGATIVE;
+            const expectedPC = cpu.pc + 0x20 + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+    });
+
+    describe('BPL', () => {
+        it('RELATIVE with negative=0', () => {
+            let cpu = makeCPU([0x10, 0x20]);
+            const expectedPC = cpu.pc + 0x20 + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+        it('RELATIVE with negative=1', () => {
+            let cpu = makeCPU([0x10, 0x20]);
+            cpu.p |= Flag.NEGATIVE;
+            const expectedPC = cpu.pc + 2;
+            cpu.execute();
+            assert.equal(cpu.pc, expectedPC);
+        });
+    });
+
     describe('BVC', () => {
         it('RELATIVE with overflow=0', () => {
             let cpu = makeCPU([0x50, 0x10]);
