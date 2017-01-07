@@ -64,6 +64,22 @@ let OpCodes = {
             }
         }}
     ],
+    BIT: [
+        { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            const m = memory.get8(cpu.readPC());
+            const masked = cpu.a & m;
+
+            cpu.setFlagFrom(Flag.OVERFLOW, masked);
+            cpu.setFlagFrom(Flag.NEGATIVE, masked);
+        }},
+        { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+            const m = memory.get8(cpu.readPC16());
+            const masked = cpu.a & m;
+
+            cpu.setFlagFrom(Flag.OVERFLOW, masked);
+            cpu.setFlagFrom(Flag.NEGATIVE, masked);
+        }}
+    ],
     CLC: [
         { op: 0x18, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
             cpu.p &= ~Flag.CARRY;
@@ -162,6 +178,12 @@ class CPU {
             this.p &= ~Flag.ZERO;
         }
     }
+
+   setFlagFrom(flag, value) {
+       // copies the flag bit from the value to p
+        this.p &= ~flag;
+        this.p |= value & flag
+   }
 
     set x(val) {
         this.setNegativeAndZeroFlags(val);

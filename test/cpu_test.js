@@ -82,6 +82,57 @@ describe('CPU', () => {
         });
     });
 
+    describe('BIT', () => {
+        it('ZEROPAGE with mask=0xFF and mem=OVERFLOW', () => {
+            let cpu = makeCPU([0x24, 0x00]);
+            cpu.a = Flag.OVERFLOW;
+            cpu.memory.put8(0x00, Flag.OVERFLOW)
+            cpu.execute();
+            assert.equal(cpu.p & Flag.OVERFLOW, Flag.OVERFLOW, "overflow flag");
+            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+        });
+        it('ZEROPAGE with mask=0xFF and mem=NEGATIVE', () => {
+            let cpu = makeCPU([0x24, 0x00]);
+            cpu.a = Flag.NEGATIVE;
+            cpu.memory.put8(0x00, Flag.NEGATIVE)
+            cpu.execute();
+            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
+            assert.equal(cpu.p & Flag.NEGATIVE, Flag.NEGATIVE, "negative flag");
+        });
+        it('ZEROPAGE with mask=0 and mem=0xFF', () => {
+            let cpu = makeCPU([0x24, 0x00]);
+            cpu.a = 0;
+            cpu.memory.put8(0x00, 0xFF)
+            cpu.execute();
+            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
+            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+        });
+        it('ABSOLUTE with mask=0 and mem=0xFF', () => {
+            let cpu = makeCPU([0x2C, 0xF0, 0x02]);
+            cpu.a = 0;
+            cpu.memory.put8(0x02F0, 0xFF)
+            cpu.execute();
+            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
+            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+        });
+        it('ABSOLUTE with mask=OVERFLOW and mem=0xFF', () => {
+            let cpu = makeCPU([0x2C, 0xF0, 0x02]);
+            cpu.a = Flag.OVERFLOW;
+            cpu.memory.put8(0x02F0, 0xFF)
+            cpu.execute();
+            assert.equal(cpu.p & Flag.OVERFLOW, Flag.OVERFLOW, "overflow flag");
+            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+        });
+        it('ABSOLUTE with mask=NEGATIVE and mem=OVERFLOW', () => {
+            let cpu = makeCPU([0x2C, 0xF0, 0x02]);
+            cpu.a = Flag.NEGATIVE;
+            cpu.memory.put8(0x02F0, Flag.OVERFLOW)
+            cpu.execute();
+            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
+            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+        });
+    });
+
     describe('CLC', () => {
         it('IMPLICIT', () => {
             // SEC then CLC
