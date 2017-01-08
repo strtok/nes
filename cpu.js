@@ -131,6 +131,13 @@ let OpCodes = {
             cpu.p &= ~Flag.CARRY;
         }}
     ],
+    CMP: [
+        { op: 0xC9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+            let result = cpu.a - cpu.readPC();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }}
+    ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
             cpu.pc = cpu.readPC16();

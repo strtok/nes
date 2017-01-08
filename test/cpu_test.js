@@ -247,6 +247,41 @@ describe('CPU', () => {
         })
     });
 
+    describe('CMP', () => {
+        it('IMMEDIATE a > m', () => {
+            let cpu = makeCPU([0xC9, 0xC0]);
+            cpu.a = 0xF0;
+            cpu.execute();
+            expect(cpu).not.flag(Flag.ZERO);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.CARRY);
+        })
+        it('IMMEDIATE a == m', () => {
+            let cpu = makeCPU([0xC9, 0xF0]);
+            cpu.a = 0xF0;
+            cpu.execute();
+            expect(cpu).flag(Flag.ZERO);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.CARRY);
+        })
+        it('IMMEDIATE a < m', () => {
+            let cpu = makeCPU([0xC9, 0x70]);
+            cpu.a = 0x0F;
+            cpu.execute();
+            expect(cpu).not.flag(Flag.ZERO);
+            expect(cpu).flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.CARRY);
+        })
+        // it('IMMEDIATE a < m with overflow', () => {
+        //     let cpu = makeCPU([0xC9, 0xF0]);
+        //     cpu.a = 0x0F;
+        //     cpu.execute();
+        //     expect(cpu).not.flag(Flag.ZERO);
+        //     expect(cpu).flag(Flag.NEGATIVE);
+        //     expect(cpu).not.flag(Flag.CARRY);
+        // })
+    });
+
     describe('JMP', () => {
         it('ABSOLUTE', () => {
             let cpu = makeCPU([0x4C, 0xBC, 0xCA]);
