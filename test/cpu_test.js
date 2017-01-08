@@ -17,6 +17,24 @@ describe('CPU', () => {
         assert.throws(cpu.execute, Error);
     });
 
+    describe('ADD', () => {
+        it('(IMMEDIATE', () => {
+            let cpu = makeCPU([0x29, 0b10101010]);
+            cpu.a = 0b01011010;
+            cpu.execute();
+            assert.equal(cpu.a, 0b00001010);
+            assert.equal(cpu.p & Flag.NEGATIVE, 0);
+        });
+        it('(ZEROPAGE', () => {
+            let cpu = makeCPU([0x25, 0x10]);
+            cpu.memory.put8(0x10,0b10101010);
+            cpu.a = 0b11110000;
+            cpu.execute();
+            assert.equal(cpu.a, 0b10100000);
+            assert.equal(cpu.p & Flag.NEGATIVE, Flag.NEGATIVE);
+        });
+    });
+
     describe('BCC', () => {
         it('RELATIVE with carry=1', () => {
             let cpu = makeCPU([0x90, 0x10]);
@@ -32,7 +50,6 @@ describe('CPU', () => {
             assert.equal(cpu.pc, expectedPC);
         });
     });
-
 
     describe('BCD', () => {
         it('RELATIVE with carry=1', () => {

@@ -30,9 +30,17 @@ let Flag = {
 };
 
 let OpCodes = {
+    AND: [
+        { op: 0x29, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+            cpu.a &= cpu.readPC();
+        }},
+        { op: 0x25, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            cpu.a &= memory.get8(cpu.readPC());
+        }}
+    ],
     BCC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { xz: "foo", op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
             const offset = cpu.readPC();
             if ((cpu.p & Flag.CARRY) == 0) {
                 cpu.pc = cpu.pc + offset;
