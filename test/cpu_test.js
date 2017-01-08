@@ -154,6 +154,7 @@ describe('CPU', () => {
             cpu.execute();
             assert.equal(cpu.p & Flag.OVERFLOW, Flag.OVERFLOW, "overflow flag");
             assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+            assert.equal(cpu.p & Flag.ZERO, 0, "zero flag");
         });
         it('ZEROPAGE with mask=0xFF and mem=NEGATIVE', () => {
             let cpu = makeCPU([0x24, 0x00]);
@@ -170,6 +171,7 @@ describe('CPU', () => {
             cpu.execute();
             assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
             assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+            assert.equal(cpu.p & Flag.ZERO, Flag.ZERO, "zero flag");
         });
         it('ABSOLUTE with mask=0 and mem=0xFF', () => {
             let cpu = makeCPU([0x2C, 0xF0, 0x02]);
@@ -194,6 +196,7 @@ describe('CPU', () => {
             cpu.execute();
             assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
             assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+            assert.equal(cpu.p & Flag.ZERO, Flag.ZERO, "zero flag");
         });
     });
 
@@ -229,7 +232,14 @@ describe('CPU', () => {
             let cpu = makeCPU([0xA9, 0xEF]);
             cpu.execute();
             assert.equal(cpu.a, 0xEF);
-        })
+        });
+        it('INDIRECT_Y', () => {
+            let cpu = makeCPU([0xB1, 0xA0]);
+            cpu.y = 0x4;
+            cpu.memory.put8(0xA4, 0xFC);
+            cpu.execute();
+            assert.equal(cpu.a, 0xFC);
+        });
     });
 
     describe('LDX', () => {
@@ -237,6 +247,46 @@ describe('CPU', () => {
             let cpu = makeCPU([0xA2, 0xEF]);
             cpu.execute();
             assert.equal(cpu.x, 0xEF);
+        })
+    });
+
+    describe('PHP', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0x08]);
+            cpu.p = 0x8A;
+            cpu.execute();
+            // bit 4 and 5 are always set to one in the pushed stack value
+            assert.equal(cpu.pop8(), 0xBA);
+        })
+    });
+
+    describe('PLA', () => {
+        it('IMPLICIT set flag when negative', () => {
+            let cpu = makeCPU([0x68]);
+            cpu.push8(0xAA);
+            cpu.execute();
+            assert.equal(cpu.a, 0xAA);
+            assert.equal(cpu.p & Flag.NEGATIVE, Flag.NEGATIVE);
+            assert.equal(cpu.p & Flag.ZERO, 0);
+        });
+        it('IMPLICIT set flag when zero', () => {
+            let cpu = makeCPU([0x68]);
+            cpu.push8(0);
+            cpu.execute();
+            assert.equal(cpu.a, 0);
+            assert.equal(cpu.p & Flag.NEGATIVE, 0);
+            assert.equal(cpu.p & Flag.ZERO, Flag.ZERO);
+        });
+    });
+
+    describe('PLP', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0x28]);
+            cpu.push8(0x8A);
+            cpu.execute();
+            // not identical to the value in the stack
+            // because bit 5 is stuck at 1 in the p register
+            assert.equal(cpu.p, 0xAA);
         })
     });
 
@@ -254,6 +304,22 @@ describe('CPU', () => {
             let cpu = makeCPU([0x38]);
             cpu.execute();
             assert.equal(cpu.p & Flag.CARRY, Flag.CARRY);
+        })
+    });
+
+    describe('SED', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0xF8]);
+            cpu.execute();
+            assert.equal(cpu.p & Flag.BCD, Flag.BCD);
+        })
+    });
+
+    describe('SEI', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0x78]);
+            cpu.execute();
+            assert.equal(cpu.p & Flag.INTERRUPT, Flag.INTERRUPT);
         })
     });
 

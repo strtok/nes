@@ -23,6 +23,8 @@ let Flag = {
     ZERO:      0b00000010,
     INTERRUPT: 0b00000100,
     BCD:       0b00001000, // ignored on NES
+    BREAK:     0b00010000, // unused
+    BIT_5:     0b00100000, // unused, but must always be set to 1
     OVERFLOW:  0b01000000,
     NEGATIVE:  0b10000000
 };
@@ -30,7 +32,7 @@ let Flag = {
 let OpCodes = {
     BCC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { xz: "foo", op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
             const offset = cpu.readPC();
             if ((cpu.p & Flag.CARRY) == 0) {
                 cpu.pc = cpu.pc + offset;
@@ -60,15 +62,15 @@ let OpCodes = {
             const m = memory.get8(cpu.readPC());
             const masked = cpu.a & m;
 
-            cpu.setFlagFrom(Flag.OVERFLOW, masked);
-            cpu.setFlagFrom(Flag.NEGATIVE, masked);
+            cpu.copyFlagFrom(Flag.OVERFLOW, masked);
+            cpu.setNegativeAndZeroFlags(masked);
         }},
         { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
             const m = memory.get8(cpu.readPC16());
             const masked = cpu.a & m;
 
-            cpu.setFlagFrom(Flag.OVERFLOW, masked);
-            cpu.setFlagFrom(Flag.NEGATIVE, masked);
+            cpu.copyFlagFrom(Flag.OVERFLOW, masked);
+            cpu.setNegativeAndZeroFlags(masked);
         }}
     ],
     BNE: [
@@ -137,18 +139,25 @@ let OpCodes = {
             cpu.a = cpu.readPC();
         }},
         { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            cpu.a = memory.get8(cpu.readPC());
         }},
         { op: 0xB5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
+            cpu.a = memory.get8(cpu.readPC() + cpu.x);
         }},
         { op: 0xAD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+            cpu.a = memory.get8(cpu.readPC16());
         }},
         { op: 0xBD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
+            cpu.a = memory.get8(cpu.readPC16() + cpu.x);
         }},
         { op: 0xB9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
+            cpu.a = memory.get8(cpu.readPC16() + cpu.y);
         }},
         { op: 0xA1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
+            cpu.a = memory.get8(cpu.readPC() + cpu.x);
         }},
         { op: 0xB1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
+            cpu.a = memory.get8(cpu.readPC() + cpu.y);
         }},
     ],
     LDX: [
@@ -160,6 +169,23 @@ let OpCodes = {
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
         }}
     ],
+    PHP: [
+        { op: 0x08, mode: AddrMode.IMPLICIT, cycles: 3, exe: function(cpu, memory) {
+            // the BREAK bit is set in the pushed value (but not necessarily in p itself)
+            // per https://wiki.nesdev.com/w/index.php/CPU_status_flag_behavior
+            cpu.push8(cpu.p | Flag.BREAK);
+        }}
+    ],
+    PLA: [
+        { op: 0x68, mode: AddrMode.IMPLICIT, cycles: 4, exe: function(cpu, memory) {
+            cpu.a = cpu.pop8();
+        }}
+    ],
+    PLP: [
+        { op: 0x28, mode: AddrMode.IMPLICIT, cycles: 4, exe: function(cpu, memory) {
+            cpu.p = cpu.pop8();
+        }}
+    ],
     RTS: [
         { op: 0x60, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu, memory) {
             cpu.pc = cpu.pop16() + 1;
@@ -168,6 +194,16 @@ let OpCodes = {
     SEC: [
         { op: 0x38, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu, memory) {
             cpu.p |= Flag.CARRY;
+        }}
+    ],
+    SED: [
+        { op: 0xF8, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu, memory) {
+            cpu.p |= Flag.BCD;
+        }}
+    ],
+    SEI: [
+        { op: 0x78, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu, memory) {
+            cpu.p |= Flag.INTERRUPT;
         }}
     ],
     STA: [
@@ -206,25 +242,24 @@ class CPU {
         });
     }
 
-    setNegativeAndZeroFlags(val) {
-        if (val & Flag.NEGATIVE) {
-            this.p |= Flag.NEGATIVE;
-        } else {
-            this.p &= ~Flag.NEGATIVE;
-        }
+    copyFlagFrom(flag, value) {
+        // copies the flag bit from the value to p
+        this.p &= ~flag;
+        this.p |= value & flag
+    }
 
-        if (val == 0) {
-            this.p |= Flag.ZERO;
+    setFlag(flag, predicate) {
+        if (predicate) {
+            this.p |= flag;
         } else {
-            this.p &= ~Flag.ZERO;
+            this.p &= ~flag;
         }
     }
 
-   setFlagFrom(flag, value) {
-       // copies the flag bit from the value to p
-        this.p &= ~flag;
-        this.p |= value & flag
-   }
+    setNegativeAndZeroFlags(val) {
+        this.copyFlagFrom(Flag.NEGATIVE, val);
+        this.setFlag(Flag.ZERO, val == 0);
+    }
 
     set x(val) {
         this.setNegativeAndZeroFlags(val);
@@ -253,6 +288,14 @@ class CPU {
         return this._a;
     }
 
+    set p(val) {
+        this._p = val | Flag.BIT_5;
+    }
+
+    get p() {
+        return this._p;
+    }
+
     // read 1 byte at PC and increment PC
     readPC() {
         return this.memory.get8(this.pc++);
@@ -274,6 +317,11 @@ class CPU {
     push16(val) {
         this.memory.put16(this.sp + 0x100, val);
         this.sp -= 2;
+    }
+
+    pop8() {
+        this.sp += 1;
+        return this.memory.get8(this.sp + 0x100);
     }
 
     pop16() {
@@ -364,7 +412,7 @@ class CPU {
             if (e instanceof TypeError) {
                 debug("invalid op code $%b (%s)", op, e.toString());
                 this.memory.debugPrintStack();
-                throw new Error("invalid op code");
+                throw new Error("invalid op code " + op + " " + e.toString());
             } else {
                 throw e;
             }
