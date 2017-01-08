@@ -1,7 +1,26 @@
-const assert = require('chai').assert;
 const Memory = require('../memory').Memory;
 const CPU = require('../cpu').CPU;
 const Flag = require('../cpu').Flag;
+
+const chai = require('chai');
+const assert = chai.assert;
+const expect = chai.expect;
+
+chai.Assertion.addMethod("flag", function(flag) {
+    let cpu = this._obj;
+
+    // first, our instanceof check, shortcut
+    new chai.Assertion(cpu).to.be.instanceof(CPU);
+
+    // second, our type check
+    this.assert(
+        (cpu.p & flag) == flag,
+        "expected flag to be set",
+        "expected flag not to be set",
+        flag,        // expected
+        cpu.p & flag // actual
+    );
+});
 
 function makeCPU(code) {
     let prgRom = new Uint8Array(16*1024);
@@ -23,7 +42,7 @@ describe('CPU', () => {
             cpu.a = 0b01011010;
             cpu.execute();
             assert.equal(cpu.a, 0b00001010);
-            assert.equal(cpu.p & Flag.NEGATIVE, 0);
+            expect(cpu).not.flag(Flag.NEGATIVE);
         });
         it('(ZEROPAGE', () => {
             let cpu = makeCPU([0x25, 0x10]);
@@ -31,7 +50,7 @@ describe('CPU', () => {
             cpu.a = 0b11110000;
             cpu.execute();
             assert.equal(cpu.a, 0b10100000);
-            assert.equal(cpu.p & Flag.NEGATIVE, Flag.NEGATIVE);
+            expect(cpu).flag(Flag.NEGATIVE);
         });
     });
 
@@ -169,51 +188,52 @@ describe('CPU', () => {
             cpu.a = Flag.OVERFLOW;
             cpu.memory.put8(0x00, Flag.OVERFLOW)
             cpu.execute();
-            assert.equal(cpu.p & Flag.OVERFLOW, Flag.OVERFLOW, "overflow flag");
-            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
-            assert.equal(cpu.p & Flag.ZERO, 0, "zero flag");
+            expect(cpu).flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.ZERO);
         });
         it('ZEROPAGE with mask=0xFF and mem=NEGATIVE', () => {
             let cpu = makeCPU([0x24, 0x00]);
             cpu.a = Flag.NEGATIVE;
             cpu.memory.put8(0x00, Flag.NEGATIVE)
             cpu.execute();
-            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
-            assert.equal(cpu.p & Flag.NEGATIVE, Flag.NEGATIVE, "negative flag");
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.ZERO);
         });
         it('ZEROPAGE with mask=0 and mem=0xFF', () => {
             let cpu = makeCPU([0x24, 0x00]);
             cpu.a = 0;
             cpu.memory.put8(0x00, 0xFF)
             cpu.execute();
-            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
-            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
-            assert.equal(cpu.p & Flag.ZERO, Flag.ZERO, "zero flag");
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.ZERO);
         });
         it('ABSOLUTE with mask=0 and mem=0xFF', () => {
             let cpu = makeCPU([0x2C, 0xF0, 0x02]);
             cpu.a = 0;
             cpu.memory.put8(0x02F0, 0xFF)
             cpu.execute();
-            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
-            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.NEGATIVE);
         });
         it('ABSOLUTE with mask=OVERFLOW and mem=0xFF', () => {
             let cpu = makeCPU([0x2C, 0xF0, 0x02]);
             cpu.a = Flag.OVERFLOW;
             cpu.memory.put8(0x02F0, 0xFF)
             cpu.execute();
-            assert.equal(cpu.p & Flag.OVERFLOW, Flag.OVERFLOW, "overflow flag");
-            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
+            expect(cpu).flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.NEGATIVE);
         });
         it('ABSOLUTE with mask=NEGATIVE and mem=OVERFLOW', () => {
             let cpu = makeCPU([0x2C, 0xF0, 0x02]);
             cpu.a = Flag.NEGATIVE;
             cpu.memory.put8(0x02F0, Flag.OVERFLOW)
             cpu.execute();
-            assert.equal(cpu.p & Flag.OVERFLOW, 0, "overflow flag");
-            assert.equal(cpu.p & Flag.NEGATIVE, 0, "negative flag");
-            assert.equal(cpu.p & Flag.ZERO, Flag.ZERO, "zero flag");
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.ZERO);
         });
     });
 
@@ -223,7 +243,7 @@ describe('CPU', () => {
             let cpu = makeCPU([0x38, 0x18]);
             cpu.execute();
             cpu.execute();
-            assert.equal(cpu.p & Flag.CARRY, 0);
+            expect(cpu).not.flag(Flag.CARRY);
         })
     });
 
@@ -283,16 +303,16 @@ describe('CPU', () => {
             cpu.push8(0xAA);
             cpu.execute();
             assert.equal(cpu.a, 0xAA);
-            assert.equal(cpu.p & Flag.NEGATIVE, Flag.NEGATIVE);
-            assert.equal(cpu.p & Flag.ZERO, 0);
+            expect(cpu).flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.ZERO);
         });
         it('IMPLICIT set flag when zero', () => {
             let cpu = makeCPU([0x68]);
             cpu.push8(0);
             cpu.execute();
             assert.equal(cpu.a, 0);
-            assert.equal(cpu.p & Flag.NEGATIVE, 0);
-            assert.equal(cpu.p & Flag.ZERO, Flag.ZERO);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.ZERO);
         });
     });
 
@@ -320,7 +340,7 @@ describe('CPU', () => {
         it('IMPLICIT', () => {
             let cpu = makeCPU([0x38]);
             cpu.execute();
-            assert.equal(cpu.p & Flag.CARRY, Flag.CARRY);
+            expect(cpu).flag(Flag.CARRY);
         })
     });
 
@@ -328,7 +348,7 @@ describe('CPU', () => {
         it('IMPLICIT', () => {
             let cpu = makeCPU([0xF8]);
             cpu.execute();
-            assert.equal(cpu.p & Flag.BCD, Flag.BCD);
+            expect(cpu).flag(Flag.BCD);
         })
     });
 
@@ -336,7 +356,7 @@ describe('CPU', () => {
         it('IMPLICIT', () => {
             let cpu = makeCPU([0x78]);
             cpu.execute();
-            assert.equal(cpu.p & Flag.INTERRUPT, Flag.INTERRUPT);
+            expect(cpu).flag(Flag.INTERRUPT);
         })
     });
 
@@ -346,7 +366,7 @@ describe('CPU', () => {
             cpu.a = 0x42;
             cpu.execute();
             assert.equal(cpu.memory.get8(0x00), 0x42);
-            assert.equal(cpu.p & Flag.ZERO, 0);
+            expect(cpu).not.flag(Flag.ZERO);
         })
     });
 
@@ -356,7 +376,7 @@ describe('CPU', () => {
             cpu.x = 0x42;
             cpu.execute();
             assert.equal(cpu.memory.get8(0x00), 0x42);
-            assert.equal(cpu.p & Flag.ZERO, 0);
+            expect(cpu).not.flag(Flag.ZERO);
         })
     });
 
