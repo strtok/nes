@@ -240,6 +240,15 @@ describe('CPU', () => {
         })
     });
 
+    describe('RTS', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0x60]);
+            cpu.push16(0x12);
+            cpu.execute();
+            assert.equal(cpu.pc, 0x13);
+        })
+    });
+
     describe('SEC', () => {
         it('IMPLICIT', () => {
             let cpu = makeCPU([0x38]);

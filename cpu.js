@@ -55,6 +55,22 @@ let OpCodes = {
             }
         }}
     ],
+    BIT: [
+        { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            const m = memory.get8(cpu.readPC());
+            const masked = cpu.a & m;
+
+            cpu.setFlagFrom(Flag.OVERFLOW, masked);
+            cpu.setFlagFrom(Flag.NEGATIVE, masked);
+        }},
+        { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+            const m = memory.get8(cpu.readPC16());
+            const masked = cpu.a & m;
+
+            cpu.setFlagFrom(Flag.OVERFLOW, masked);
+            cpu.setFlagFrom(Flag.NEGATIVE, masked);
+        }}
+    ],
     BNE: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
@@ -100,22 +116,6 @@ let OpCodes = {
             }
         }}
     ],
-    BIT: [
-        { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            const m = memory.get8(cpu.readPC());
-            const masked = cpu.a & m;
-
-            cpu.setFlagFrom(Flag.OVERFLOW, masked);
-            cpu.setFlagFrom(Flag.NEGATIVE, masked);
-        }},
-        { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
-            const m = memory.get8(cpu.readPC16());
-            const masked = cpu.a & m;
-
-            cpu.setFlagFrom(Flag.OVERFLOW, masked);
-            cpu.setFlagFrom(Flag.NEGATIVE, masked);
-        }}
-    ],
     CLC: [
         { op: 0x18, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
             cpu.p &= ~Flag.CARRY;
@@ -158,6 +158,11 @@ let OpCodes = {
     ],
     NOP: [
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        }}
+    ],
+    RTS: [
+        { op: 0x60, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu, memory) {
+            cpu.pc = cpu.pop16() + 1;
         }}
     ],
     SEC: [
@@ -269,6 +274,11 @@ class CPU {
     push16(val) {
         this.memory.put16(this.sp + 0x100, val);
         this.sp -= 2;
+    }
+
+    pop16() {
+        this.sp += 2;
+        return this.memory.get16(this.sp + 0x100);
     }
 
     disassemble(addr) {
