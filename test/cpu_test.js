@@ -247,6 +247,16 @@ describe('CPU', () => {
         })
     });
 
+    describe('CLD', () => {
+        it('IMPLICIT', () => {
+            // SEC then CLC
+            let cpu = makeCPU([0xF8, 0xD8]);
+            cpu.execute();
+            cpu.execute();
+            expect(cpu).not.flag(Flag.CLD);
+        })
+    });
+
     describe('CMP', () => {
         it('IMMEDIATE a > m', () => {
             let cpu = makeCPU([0xC9, 0xC0]);

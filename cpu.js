@@ -131,6 +131,11 @@ let OpCodes = {
             cpu.p &= ~Flag.CARRY;
         }}
     ],
+    CLD: [
+        { op: 0xD8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+            cpu.p &= ~Flag.BCD;
+        }}
+    ],
     CMP: [
         { op: 0xC9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
             let result = cpu.a - cpu.readPC();
