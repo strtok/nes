@@ -23,8 +23,8 @@ let Flag = {
     ZERO:      0b00000010,
     INTERRUPT: 0b00000100,
     BCD:       0b00001000, // ignored on NES
-    BREAK:     0b00010000, // unused
-    BIT_5:     0b00100000, // unused, but must always be set to 1
+    BREAK:     0b00010000, // unused, always 0
+    BIT_5:     0b00100000, // unused, always 1
     OVERFLOW:  0b01000000,
     NEGATIVE:  0b10000000
 };
@@ -189,9 +189,14 @@ let OpCodes = {
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
         }}
     ],
+    PHA: [
+        { op: 0x48, mode: AddrMode.IMPLICIT, cycles: 3, exe: function(cpu, memory) {
+            cpu.push8(cpu.a);
+        }}
+    ],
     PHP: [
         { op: 0x08, mode: AddrMode.IMPLICIT, cycles: 3, exe: function(cpu, memory) {
-            // the BREAK bit is set in the pushed value (but not necessarily in p itself)
+            // the BREAK bit is set in the pushed value (but not in p itself)
             // per https://wiki.nesdev.com/w/index.php/CPU_status_flag_behavior
             cpu.push8(cpu.p | Flag.BREAK);
         }}
@@ -309,7 +314,7 @@ class CPU {
     }
 
     set p(val) {
-        this._p = val | Flag.BIT_5;
+        this._p = (val | Flag.BIT_5) & (~Flag.BREAK);
     }
 
     get p() {

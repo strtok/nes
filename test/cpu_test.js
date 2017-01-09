@@ -324,6 +324,15 @@ describe('CPU', () => {
         })
     });
 
+    describe('PHA', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0x48]);
+            cpu.a = 0x8A;
+            cpu.execute();
+            assert.equal(cpu.pop8(), 0x8A);
+        })
+    });
+
     describe('PHP', () => {
         it('IMPLICIT', () => {
             let cpu = makeCPU([0x08]);
