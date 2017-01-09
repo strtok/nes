@@ -68,17 +68,19 @@ let OpCodes = {
     BIT: [
         { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
             const m = memory.get8(cpu.readPC());
-            const masked = cpu.a & m;
+            cpu.copyFlagFrom(Flag.NEGATIVE, m);
+            cpu.copyFlagFrom(Flag.OVERFLOW, m);
 
-            cpu.copyFlagFrom(Flag.OVERFLOW, masked);
-            cpu.setNegativeAndZeroFlags(masked);
+            const masked = cpu.a & m;
+            cpu.setFlag(Flag.ZERO, masked == 0);
         }},
         { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
             const m = memory.get8(cpu.readPC16());
-            const masked = cpu.a & m;
+            cpu.copyFlagFrom(Flag.NEGATIVE, m);
+            cpu.copyFlagFrom(Flag.OVERFLOW, m);
 
-            cpu.copyFlagFrom(Flag.OVERFLOW, masked);
-            cpu.setNegativeAndZeroFlags(masked);
+            const masked = cpu.a & m;
+            cpu.setFlag(Flag.ZERO, masked == 0);
         }}
     ],
     BNE: [
@@ -134,6 +136,16 @@ let OpCodes = {
     CLD: [
         { op: 0xD8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
             cpu.p &= ~Flag.BCD;
+        }}
+    ],
+    CLI: [
+        { op: 0x58, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+            cpu.p &= ~Flag.INTERRUPT;
+        }}
+    ],
+    CLV: [
+        { op: 0xB8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+            cpu.p &= ~Flag.OVERFLOW;
         }}
     ],
     CMP: [

@@ -206,8 +206,8 @@ describe('CPU', () => {
             cpu.a = 0;
             cpu.memory.put8(0x00, 0xFF)
             cpu.execute();
-            expect(cpu).not.flag(Flag.OVERFLOW);
-            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.OVERFLOW);
+            expect(cpu).flag(Flag.NEGATIVE);
             expect(cpu).flag(Flag.ZERO);
         });
         it('ABSOLUTE with mask=0 and mem=0xFF', () => {
@@ -215,15 +215,15 @@ describe('CPU', () => {
             cpu.a = 0;
             cpu.memory.put8(0x02F0, 0xFF)
             cpu.execute();
-            expect(cpu).not.flag(Flag.OVERFLOW);
-            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.OVERFLOW);
+            expect(cpu).flag(Flag.NEGATIVE);
         });
         it('ABSOLUTE with mask=OVERFLOW and mem=0xFF', () => {
             let cpu = makeCPU([0x2C, 0xF0, 0x02]);
             cpu.a = Flag.OVERFLOW;
-            cpu.memory.put8(0x02F0, 0xFF)
+            cpu.memory.put8(0x02F0, 0x3F)
             cpu.execute();
-            expect(cpu).flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.OVERFLOW);
             expect(cpu).not.flag(Flag.NEGATIVE);
         });
         it('ABSOLUTE with mask=NEGATIVE and mem=OVERFLOW', () => {
@@ -231,7 +231,7 @@ describe('CPU', () => {
             cpu.a = Flag.NEGATIVE;
             cpu.memory.put8(0x02F0, Flag.OVERFLOW)
             cpu.execute();
-            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).flag(Flag.OVERFLOW);
             expect(cpu).not.flag(Flag.NEGATIVE);
             expect(cpu).flag(Flag.ZERO);
         });
@@ -249,7 +249,7 @@ describe('CPU', () => {
 
     describe('CLD', () => {
         it('IMPLICIT', () => {
-            // SEC then CLC
+            // SEC then CLD
             let cpu = makeCPU([0xF8, 0xD8]);
             cpu.execute();
             cpu.execute();
@@ -257,6 +257,28 @@ describe('CPU', () => {
         })
     });
 
+    describe('CLI', () => {
+        it('IMPLICIT', () => {
+            // SEI then CLI
+            let cpu = makeCPU([0x78, 0x58]);
+            cpu.execute();
+            cpu.execute();
+            expect(cpu).not.flag(Flag.INTERRUPT);
+        })
+    });
+
+    describe('CLV', () => {
+        it('IMPLICIT', () => {
+            // BIT 0x10 then CLV
+            let cpu = makeCPU([0x24, 0x10, 0xB8]);
+            cpu.memory.put8(0x10, Flag.OVERFLOW)
+            cpu.a = Flag.OVERFLOW;
+            cpu.execute();
+            expect(cpu).flag(Flag.OVERFLOW);
+            cpu.execute();
+            expect(cpu).not.flag(Flag.OVERFLOW);
+        })
+    });
     describe('CMP', () => {
         it('IMMEDIATE a > m', () => {
             let cpu = makeCPU([0xC9, 0xC0]);
