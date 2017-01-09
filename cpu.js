@@ -143,6 +143,14 @@ let OpCodes = {
             cpu.setNegativeAndZeroFlags(result);
         }}
     ],
+    EOR: [
+        { op: 0x49, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+            cpu.a ^= cpu.readPC();
+        }},
+        { op: 0x45, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            cpu.a ^= memory.get8(cpu.readPC());
+        }}
+    ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
             cpu.pc = cpu.readPC16();
@@ -187,6 +195,14 @@ let OpCodes = {
     ],
     NOP: [
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        }}
+    ],
+    ORA: [
+        { op: 0x09, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+            cpu.a |= cpu.readPC();
+        }},
+        { op: 0x05, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+            cpu.a |= memory.get8(cpu.readPC());
         }}
     ],
     PHA: [

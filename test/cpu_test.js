@@ -36,7 +36,7 @@ describe('CPU', () => {
         assert.throws(cpu.execute, Error);
     });
 
-    describe('ADD', () => {
+    describe('AND', () => {
         it('(IMMEDIATE', () => {
             let cpu = makeCPU([0x29, 0b10101010]);
             cpu.a = 0b01011010;
@@ -284,6 +284,24 @@ describe('CPU', () => {
         });
     });
 
+    describe('EOR', () => {
+        it('(IMMEDIATE', () => {
+            let cpu = makeCPU([0x49, 0b10101010]);
+            cpu.a = 0b01011010;
+            cpu.execute();
+            assert.equal(cpu.a, 0b11110000);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('(ZEROPAGE', () => {
+            let cpu = makeCPU([0x45, 0x10]);
+            cpu.memory.put8(0x10,0b10101010);
+            cpu.a = 0b11110000;
+            cpu.execute();
+            assert.equal(cpu.a, 0b01011010);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+        });
+    });
+
     describe('JMP', () => {
         it('ABSOLUTE', () => {
             let cpu = makeCPU([0x4C, 0xBC, 0xCA]);
@@ -322,6 +340,24 @@ describe('CPU', () => {
             cpu.execute();
             assert.equal(cpu.x, 0xEF);
         })
+    });
+
+    describe('ORA', () => {
+        it('(IMMEDIATE', () => {
+            let cpu = makeCPU([0x09, 0b10101010]);
+            cpu.a = 0b01011010;
+            cpu.execute();
+            assert.equal(cpu.a, 0b11111010);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('(ZEROPAGE', () => {
+            let cpu = makeCPU([0x05, 0x10]);
+            cpu.memory.put8(0x10,0b10101010);
+            cpu.a = 0b11110000;
+            cpu.execute();
+            assert.equal(cpu.a, 0b11111010);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
     });
 
     describe('PHA', () => {
