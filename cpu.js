@@ -35,7 +35,25 @@ let OpCodes = {
             cpu.a &= cpu.readPC();
         }},
         { op: 0x25, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            cpu.a &= memory.get8(cpu.readPC());
+            cpu.a &= cpu.readZeroPageFromPC();
+        }},
+        { op: 0x35, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
+            cpu.a &= cpu.readZeroPageXFromPC();
+        }},
+        { op: 0x2D, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+            cpu.a &= cpu.readAbsoluteFromPC();
+        }},
+        { op: 0x3D, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
+            cpu.a &= cpu.readAbsoluteXFromPC();
+        }},
+        { op: 0x39, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
+            cpu.a &= cpu.readAbsoluteYFromPC();
+        }},
+        { op: 0x21, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
+            cpu.a &= cpu.readIndirectXFromPC();
+        }},
+        { op: 0x31, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
+            cpu.a &= cpu.readIndirectYFromPC();
         }}
     ],
     BCC: [
@@ -179,26 +197,26 @@ let OpCodes = {
             cpu.a = cpu.readPC();
         }},
         { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            cpu.a = memory.get8(cpu.readPC());
+            cpu.a = cpu.readZeroPageFromPC();
         }},
         { op: 0xB5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = memory.get8(cpu.readPC() + cpu.x);
+            cpu.a = cpu.readZeroPageXFromPC();
         }},
         { op: 0xAD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = memory.get8(cpu.readPC16());
+            cpu.a = cpu.readAbsoluteFromPC();
         }},
         { op: 0xBD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = memory.get8(cpu.readPC16() + cpu.x);
+            cpu.a = cpu.readAbsoluteXFromPC();
         }},
         { op: 0xB9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = memory.get8(cpu.readPC16() + cpu.y);
+            cpu.a = cpu.readAbsoluteYFromPC();
         }},
         { op: 0xA1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
-            cpu.a = memory.get8(cpu.readPC() + cpu.x);
+            cpu.a = cpu.readIndirectXFromPC();
         }},
         { op: 0xB1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
-            cpu.a = memory.get8(cpu.readPC() + cpu.y);
-        }},
+            cpu.a = cpu.readIndirectYFromPC();
+        }}
     ],
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
@@ -359,6 +377,36 @@ class CPU {
         let pc = this.pc;
         this.pc += 2;
         return this.memory.get16(pc);
+    }
+
+    readZeroPageFromPC() {
+        return this.memory.get8(this.readPC())
+    }
+
+    readZeroPageXFromPC() {
+        return this.memory.get8((this.readPC() + this.x) % 256)
+    }
+
+    readAbsoluteFromPC() {
+        return this.memory.get8(this.readPC16())
+    }
+
+    readAbsoluteXFromPC() {
+        return this.memory.get8(this.readPC16() + this.x)
+    }
+
+    readAbsoluteYFromPC() {
+        return this.memory.get8(this.readPC16() + this.y)
+    }
+
+    /** indexed indirect */
+    readIndirectXFromPC() {
+        return this.memory.get8(this.memory.get8((this.readPC() + this.x) % 256));
+    }
+
+    /** indirect indexed */
+    readIndirectYFromPC() {
+        return this.memory.get8((this.memory.get8(this.readPC()) + this.y) % 256);
     }
 
     // push value on stack

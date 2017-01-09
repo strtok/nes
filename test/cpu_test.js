@@ -347,10 +347,19 @@ describe('CPU', () => {
             cpu.execute();
             assert.equal(cpu.a, 0xEF);
         });
+        it('INDIRECT_X', () => {
+            let cpu = makeCPU([0xA1, 0xA0]);
+            cpu.x = 0x4;
+            cpu.memory.put8(0xA4, 0xC0);
+            cpu.memory.put8(0xC0, 0xF0);
+            cpu.execute();
+            assert.equal(cpu.a, 0xF0);
+        });
         it('INDIRECT_Y', () => {
             let cpu = makeCPU([0xB1, 0xA0]);
             cpu.y = 0x4;
-            cpu.memory.put8(0xA4, 0xFC);
+            cpu.memory.put8(0xA0, 0xB0);
+            cpu.memory.put8(0xB4, 0xFC);
             cpu.execute();
             assert.equal(cpu.a, 0xFC);
         });
