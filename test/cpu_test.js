@@ -37,7 +37,7 @@ describe('CPU', () => {
     });
 
     describe('ADC', () => {
-        it('(IMMEDIATE', () => {
+        it('IMMEDIATE', () => {
             let cpu = makeCPU([0x69, 0x10]);
             cpu.a = 0x10;
             cpu.execute();
@@ -46,17 +46,26 @@ describe('CPU', () => {
             expect(cpu).not.flag(Flag.OVERFLOW);
             expect(cpu).not.flag(Flag.CARRY);
         });
+        it('IMMEDIATE unsigned overflow', () => {
+            let cpu = makeCPU([0x69, 0x20]);
+            cpu.a = 0xF0;
+            cpu.execute();
+            assert.equal(cpu.a, 0x10);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.CARRY);
+        });
     });
 
     describe('AND', () => {
-        it('(IMMEDIATE', () => {
+        it('IMMEDIATE', () => {
             let cpu = makeCPU([0x29, 0b10101010]);
             cpu.a = 0b01011010;
             cpu.execute();
             assert.equal(cpu.a, 0b00001010);
             expect(cpu).not.flag(Flag.NEGATIVE);
         });
-        it('(ZEROPAGE', () => {
+        it('ZEROPAGE', () => {
             let cpu = makeCPU([0x25, 0x10]);
             cpu.memory.put8(0x10,0b10101010);
             cpu.a = 0b11110000;

@@ -32,7 +32,7 @@ let Flag = {
 let OpCodes = {
     ADC: [
         { op: 0x69, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
-            cpu.a += cpu.readPC();
+            cpu.a = (cpu.a + cpu.readPC()) % 0x100;
         }},
     ],
     AND: [
