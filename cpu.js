@@ -26,7 +26,20 @@ let Flag = {
     BREAK:     0b00010000, // unused, always 0
     BIT_5:     0b00100000, // unused, always 1
     OVERFLOW:  0b01000000,
-    NEGATIVE:  0b10000000
+    NEGATIVE:  0b10000000,
+
+    toString: function(p) {
+        return printf("%s%s%s%s%s%s%s%s",
+            (p & this.NEGATIVE) ? "N" : ".",
+            (p & this.OVERFLOW) ? "V" : ".",
+            (p & this.BIT_5) ? "E" : ".",
+            (p & this.BREAK) ? "B" : ".",
+            (p & this.BCD) ? "D" : ".",
+            (p & this.INTERRUPT) ? "I" : ".",
+            (p & this.ZERO) ? "N" : ".",
+            (p & this.CARRY) ? "C" : "."
+        )
+    }
 };
 
 let OpCodes = {
@@ -499,13 +512,14 @@ class CPU {
 
         const disasm = rightpad(this.disassemble(this.pc).toString(), 10);
 
-        debug("$%a %s a=$%b x=$%b y=$%b sp=$%b p=$%b",
+        debug("$%a %s a=$%b x=$%b y=$%b sp=$%b p=%s ($%b)",
             this.pc,
             disasm,
             this.a,
             this.x,
             this.y,
             this.sp,
+            Flag.toString(this.p),
             this.p
         );
 

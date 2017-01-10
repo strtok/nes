@@ -2,6 +2,7 @@ let assert = require('chai').assert;
 let Rom = require('../rom').Rom;
 let Memory = require('../memory').Memory;
 let CPU = require('../cpu').CPU;
+let Flag = require('../cpu').Flag;
 let nestest = require('./nestest_rom');
 let log = require('./nestest_log').log;
 let toBits = require('../math').toBits
@@ -19,7 +20,7 @@ describe('nestest', () => {
             assert.equal(cpu.y, log[i].y, "y");
             assert.equal(cpu.sp, log[i].sp, "sp");
 
-            assert(cpu.p == log[i].p, `expected P: ${toBits(log[i].p)}, but was P: ${toBits(cpu.p)}`);
+            assert(cpu.p == log[i].p, `expected P: ${Flag.toString(log[i].p)}, but was P: ${Flag.toString(cpu.p)}`);
 
             try {
                 cpu.execute();
