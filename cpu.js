@@ -30,6 +30,11 @@ let Flag = {
 };
 
 let OpCodes = {
+    ADC: [
+        { op: 0x69, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+            cpu.a += cpu.readPC();
+        }},
+    ],
     AND: [
         { op: 0x29, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
             cpu.a &= cpu.readPC();

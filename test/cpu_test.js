@@ -36,6 +36,18 @@ describe('CPU', () => {
         assert.throws(cpu.execute, Error);
     });
 
+    describe('ADC', () => {
+        it('(IMMEDIATE', () => {
+            let cpu = makeCPU([0x69, 0x10]);
+            cpu.a = 0x10;
+            cpu.execute();
+            assert.equal(cpu.a, 0x20);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.CARRY);
+        });
+    });
+
     describe('AND', () => {
         it('(IMMEDIATE', () => {
             let cpu = makeCPU([0x29, 0b10101010]);

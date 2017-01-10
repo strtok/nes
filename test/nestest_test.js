@@ -4,6 +4,7 @@ let Memory = require('../memory').Memory;
 let CPU = require('../cpu').CPU;
 let nestest = require('./nestest_rom');
 let log = require('./nestest_log').log;
+let toBits = require('../math').toBits
 
 describe('nestest', () => {
     it('executes as expected', function() {
@@ -17,7 +18,9 @@ describe('nestest', () => {
             assert.equal(cpu.x, log[i].x, "x");
             assert.equal(cpu.y, log[i].y, "y");
             assert.equal(cpu.sp, log[i].sp, "sp");
-            assert.equal(cpu.p, log[i].p, "p");
+
+            assert(cpu.p == log[i].p, `expected P: ${toBits(log[i].p)}, but was P: ${toBits(cpu.p)}`);
+
             try {
                 cpu.execute();
             } catch (e) {
