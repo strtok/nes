@@ -44,39 +44,39 @@ let Flag = {
 
 let OpCodes = {
     ADC: [
-        { op: 0x69, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x69, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             cpu.a = (cpu.a + cpu.readPC()) % 0x100;
         }},
     ],
     AND: [
-        { op: 0x29, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x29, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             cpu.a &= cpu.readPC();
         }},
-        { op: 0x25, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+        { op: 0x25, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.a &= cpu.readZeroPage();
         }},
-        { op: 0x35, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
+        { op: 0x35, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
             cpu.a &= cpu.readZeroPageX();
         }},
-        { op: 0x2D, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+        { op: 0x2D, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
             cpu.a &= cpu.readAbsolute();
         }},
-        { op: 0x3D, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
+        { op: 0x3D, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
             cpu.a &= cpu.readAbsoluteX();
         }},
-        { op: 0x39, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
+        { op: 0x39, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu) {
             cpu.a &= cpu.readAbsoluteY();
         }},
-        { op: 0x21, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
+        { op: 0x21, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
             cpu.a &= cpu.readIndirectX();
         }},
-        { op: 0x31, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
+        { op: 0x31, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu) {
             cpu.a &= cpu.readIndirectY();
         }}
     ],
     BCC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if ((cpu.p & Flag.CARRY) == 0) {
                 cpu.pc = cpu.pc + offset;
@@ -85,7 +85,7 @@ let OpCodes = {
     ],
     BCS: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (cpu.p & Flag.CARRY) {
                 cpu.pc = cpu.pc + offset;
@@ -94,7 +94,7 @@ let OpCodes = {
     ],
     BEQ: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0xF0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xF0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (cpu.p & Flag.ZERO) {
                 cpu.pc = cpu.pc + offset;
@@ -102,7 +102,7 @@ let OpCodes = {
         }}
     ],
     BIT: [
-        { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+        { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             const m = cpu.readZeroPage();
             cpu.copyFlagFrom(Flag.NEGATIVE, m);
             cpu.copyFlagFrom(Flag.OVERFLOW, m);
@@ -110,7 +110,7 @@ let OpCodes = {
             const masked = cpu.a & m;
             cpu.setFlag(Flag.ZERO, masked == 0);
         }},
-        { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+        { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
             const m = cpu.readAbsolute();
             cpu.copyFlagFrom(Flag.NEGATIVE, m);
             cpu.copyFlagFrom(Flag.OVERFLOW, m);
@@ -121,7 +121,7 @@ let OpCodes = {
     ],
     BNE: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (!(cpu.p & Flag.ZERO)) {
                 cpu.pc = cpu.pc + offset;
@@ -130,7 +130,7 @@ let OpCodes = {
     ],
     BMI: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0x30, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x30, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (cpu.p & Flag.NEGATIVE) {
                 cpu.pc = cpu.pc + offset;
@@ -139,7 +139,7 @@ let OpCodes = {
     ],
     BPL: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0x10, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x10, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (!(cpu.p & Flag.NEGATIVE)) {
                 cpu.pc = cpu.pc + offset;
@@ -148,7 +148,7 @@ let OpCodes = {
     ],
     BVC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0x50, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x50, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (!(cpu.p & Flag.OVERFLOW)) {
                 cpu.pc = cpu.pc + offset;
@@ -157,7 +157,7 @@ let OpCodes = {
     ],
     BVS: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0x70, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x70, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (cpu.p & Flag.OVERFLOW) {
                 cpu.pc = cpu.pc + offset;
@@ -165,144 +165,144 @@ let OpCodes = {
         }}
     ],
     CLC: [
-        { op: 0x18, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x18, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.p &= ~Flag.CARRY;
         }}
     ],
     CLD: [
-        { op: 0xD8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xD8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.p &= ~Flag.BCD;
         }}
     ],
     CLI: [
-        { op: 0x58, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x58, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.p &= ~Flag.INTERRUPT;
         }}
     ],
     CLV: [
-        { op: 0xB8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xB8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.p &= ~Flag.OVERFLOW;
         }}
     ],
     CMP: [
-        { op: 0xC9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xC9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             let result = cpu.a - cpu.readPC();
             cpu.setFlag(Flag.CARRY, result >= 0);
             cpu.setNegativeAndZeroFlags(result);
         }}
     ],
     EOR: [
-        { op: 0x49, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x49, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.a ^= cpu.readPC();
         }},
-        { op: 0x45, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+        { op: 0x45, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.a ^= cpu.readZeroPage();
         }}
     ],
     JMP: [
-        { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu, memory) {
+        { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
             cpu.pc = cpu.readPC16();
         }}
     ],
     JSR: [
-        { op: 0x20, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu, memory) {
+        { op: 0x20, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
             cpu.push16(cpu.pc + 1);
             cpu.pc = cpu.readPC16();
         }}
     ],
     LDA: [
-        { op: 0xA9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xA9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             cpu.a = cpu.readPC();
         }},
-        { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+        { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.a = cpu.readZeroPage();
         }},
-        { op: 0xB5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
+        { op: 0xB5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
             cpu.a = cpu.readZeroPageX();
         }},
-        { op: 0xAD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
+        { op: 0xAD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
             cpu.a = cpu.readAbsolute();
         }},
-        { op: 0xBD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
+        { op: 0xBD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
             cpu.a = cpu.readAbsoluteX();
         }},
-        { op: 0xB9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
+        { op: 0xB9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu) {
             cpu.a = cpu.readAbsoluteY();
         }},
-        { op: 0xA1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
+        { op: 0xA1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
             cpu.a = cpu.readIndirectX();
         }},
-        { op: 0xB1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
+        { op: 0xB1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu) {
             cpu.a = cpu.readIndirectY();
         }}
     ],
     LDX: [
-        { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             cpu.x = cpu.readPC();
         }}
     ],
     NOP: [
-        { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
         }}
     ],
     ORA: [
-        { op: 0x09, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x09, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.a |= cpu.readPC();
         }},
-        { op: 0x05, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
+        { op: 0x05, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.a |= cpu.readZeroPage();
         }}
     ],
     PHA: [
-        { op: 0x48, mode: AddrMode.IMPLICIT, cycles: 3, exe: function(cpu, memory) {
+        { op: 0x48, mode: AddrMode.IMPLICIT, cycles: 3, exe: function(cpu) {
             cpu.push8(cpu.a);
         }}
     ],
     PHP: [
-        { op: 0x08, mode: AddrMode.IMPLICIT, cycles: 3, exe: function(cpu, memory) {
+        { op: 0x08, mode: AddrMode.IMPLICIT, cycles: 3, exe: function(cpu) {
             // the BREAK bit is set in the pushed value (but not in p itself)
             // per https://wiki.nesdev.com/w/index.php/CPU_status_flag_behavior
             cpu.push8(cpu.p | Flag.BREAK);
         }}
     ],
     PLA: [
-        { op: 0x68, mode: AddrMode.IMPLICIT, cycles: 4, exe: function(cpu, memory) {
+        { op: 0x68, mode: AddrMode.IMPLICIT, cycles: 4, exe: function(cpu) {
             cpu.a = cpu.pop8();
         }}
     ],
     PLP: [
-        { op: 0x28, mode: AddrMode.IMPLICIT, cycles: 4, exe: function(cpu, memory) {
+        { op: 0x28, mode: AddrMode.IMPLICIT, cycles: 4, exe: function(cpu) {
             cpu.p = cpu.pop8();
         }}
     ],
     RTS: [
-        { op: 0x60, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu, memory) {
+        { op: 0x60, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu) {
             cpu.pc = cpu.pop16() + 1;
         }}
     ],
     SEC: [
-        { op: 0x38, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x38, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu) {
             cpu.p |= Flag.CARRY;
         }}
     ],
     SED: [
-        { op: 0xF8, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0xF8, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu) {
             cpu.p |= Flag.BCD;
         }}
     ],
     SEI: [
-        { op: 0x78, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu, memory) {
+        { op: 0x78, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu) {
             cpu.p |= Flag.INTERRUPT;
         }}
     ],
     STA: [
-        { op: 0x85, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            memory.put8(cpu.readPC(), cpu.a);
+        { op: 0x85, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.memory.put8(cpu.readPC(), cpu.a);
         }}
     ],
     STX: [
-        { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            memory.put8(cpu.readPC(), cpu.x);
+        { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.memory.put8(cpu.readPC(), cpu.x);
         }}
     ]
 };
@@ -530,7 +530,7 @@ class CPU {
         const inst = this.opMap[op];
 
         try {
-            inst.exe(this, this.memory);
+            inst.exe(this);
         } catch (e) {
             if (e instanceof TypeError) {
                 debug("invalid op code $%b (%s)", op, e.toString());
