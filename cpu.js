@@ -249,7 +249,26 @@ let OpCodes = {
         }},
         { op: 0x45, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.a ^= cpu.readZeroPage();
+        }},
+        { op: 0x55, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
+            cpu.a ^= cpu.readZeroPageX();
+        }},
+        { op: 0x4D, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.a ^= cpu.readAbsolute();
+        }},
+        { op: 0x5D, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.a ^= cpu.readAbsoluteX();
+        }},
+        { op: 0x59, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu) {
+            cpu.a ^= cpu.readAbsoluteY();
+        }},
+        { op: 0x41, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
+            cpu.a ^= cpu.readIndirectX();
+        }},
+        { op: 0x51, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu) {
+            cpu.a ^= cpu.readIndirectY();
         }}
+
     ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
@@ -303,6 +322,24 @@ let OpCodes = {
         }},
         { op: 0x05, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.a |= cpu.readZeroPage();
+        }},
+        { op: 0x15, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
+            cpu.a |= cpu.readZeroPageX();
+        }},
+        { op: 0x0D, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.a |= cpu.readAbsolute();
+        }},
+        { op: 0x1D, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.a |= cpu.readAbsoluteX();
+        }},
+        { op: 0x19, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu) {
+            cpu.a |= cpu.readAbsoluteY();
+        }},
+        { op: 0x01, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
+            cpu.a |= cpu.readIndirectX();
+        }},
+        { op: 0x11, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu) {
+            cpu.a |= cpu.readIndirectY();
         }}
     ],
     PHA: [
