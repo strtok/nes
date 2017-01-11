@@ -53,31 +53,31 @@ let OpCodes = {
             cpu.a &= cpu.readPC();
         }},
         { op: 0x25, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            cpu.a &= cpu.readZeroPageFromPC();
+            cpu.a &= cpu.readZeroPage();
         }},
         { op: 0x35, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
-            cpu.a &= cpu.readZeroPageXFromPC();
+            cpu.a &= cpu.readZeroPageX();
         }},
         { op: 0x2D, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
-            cpu.a &= cpu.readAbsoluteFromPC();
+            cpu.a &= cpu.readAbsolute();
         }},
         { op: 0x3D, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
-            cpu.a &= cpu.readAbsoluteXFromPC();
+            cpu.a &= cpu.readAbsoluteX();
         }},
         { op: 0x39, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
-            cpu.a &= cpu.readAbsoluteYFromPC();
+            cpu.a &= cpu.readAbsoluteY();
         }},
         { op: 0x21, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
-            cpu.a &= cpu.readIndirectXFromPC();
+            cpu.a &= cpu.readIndirectX();
         }},
         { op: 0x31, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
-            cpu.a &= cpu.readIndirectYFromPC();
+            cpu.a &= cpu.readIndirectY();
         }}
     ],
     BCC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if ((cpu.p & Flag.CARRY) == 0) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -86,7 +86,7 @@ let OpCodes = {
     BCS: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if (cpu.p & Flag.CARRY) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -95,7 +95,7 @@ let OpCodes = {
     BEQ: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xF0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if (cpu.p & Flag.ZERO) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -103,7 +103,7 @@ let OpCodes = {
     ],
     BIT: [
         { op: 0x24, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            const m = memory.get8(cpu.readPC());
+            const m = cpu.readZeroPage();
             cpu.copyFlagFrom(Flag.NEGATIVE, m);
             cpu.copyFlagFrom(Flag.OVERFLOW, m);
 
@@ -111,7 +111,7 @@ let OpCodes = {
             cpu.setFlag(Flag.ZERO, masked == 0);
         }},
         { op: 0x2C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
-            const m = memory.get8(cpu.readPC16());
+            const m = cpu.readAbsolute();
             cpu.copyFlagFrom(Flag.NEGATIVE, m);
             cpu.copyFlagFrom(Flag.OVERFLOW, m);
 
@@ -122,7 +122,7 @@ let OpCodes = {
     BNE: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if (!(cpu.p & Flag.ZERO)) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -131,7 +131,7 @@ let OpCodes = {
     BMI: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x30, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if (cpu.p & Flag.NEGATIVE) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -140,7 +140,7 @@ let OpCodes = {
     BPL: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x10, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if (!(cpu.p & Flag.NEGATIVE)) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -149,7 +149,7 @@ let OpCodes = {
     BVC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x50, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if (!(cpu.p & Flag.OVERFLOW)) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -158,7 +158,7 @@ let OpCodes = {
     BVS: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x70, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readRelativeFromPC();
+            const offset = cpu.readRelative();
             if (cpu.p & Flag.OVERFLOW) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -196,7 +196,7 @@ let OpCodes = {
             cpu.a ^= cpu.readPC();
         }},
         { op: 0x45, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            cpu.a ^= memory.get8(cpu.readPC());
+            cpu.a ^= cpu.readZeroPage();
         }}
     ],
     JMP: [
@@ -215,25 +215,25 @@ let OpCodes = {
             cpu.a = cpu.readPC();
         }},
         { op: 0xA5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            cpu.a = cpu.readZeroPageFromPC();
+            cpu.a = cpu.readZeroPage();
         }},
         { op: 0xB5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = cpu.readZeroPageXFromPC();
+            cpu.a = cpu.readZeroPageX();
         }},
         { op: 0xAD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = cpu.readAbsoluteFromPC();
+            cpu.a = cpu.readAbsolute();
         }},
         { op: 0xBD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = cpu.readAbsoluteXFromPC();
+            cpu.a = cpu.readAbsoluteX();
         }},
         { op: 0xB9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu, memory) {
-            cpu.a = cpu.readAbsoluteYFromPC();
+            cpu.a = cpu.readAbsoluteY();
         }},
         { op: 0xA1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu, memory) {
-            cpu.a = cpu.readIndirectXFromPC();
+            cpu.a = cpu.readIndirectX();
         }},
         { op: 0xB1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu, memory) {
-            cpu.a = cpu.readIndirectYFromPC();
+            cpu.a = cpu.readIndirectY();
         }}
     ],
     LDX: [
@@ -250,7 +250,7 @@ let OpCodes = {
             cpu.a |= cpu.readPC();
         }},
         { op: 0x05, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu, memory) {
-            cpu.a |= memory.get8(cpu.readPC());
+            cpu.a |= cpu.readZeroPage();
         }}
     ],
     PHA: [
@@ -397,36 +397,36 @@ class CPU {
         return this.memory.get16(pc);
     }
 
-    readRelativeFromPC() {
+    readRelative() {
         return tc(this.readPC())
     }
-    readZeroPageFromPC() {
+    readZeroPage() {
         return this.memory.get8(this.readPC())
     }
 
-    readZeroPageXFromPC() {
+    readZeroPageX() {
         return this.memory.get8((this.readPC() + this.x) % 256)
     }
 
-    readAbsoluteFromPC() {
+    readAbsolute() {
         return this.memory.get8(this.readPC16())
     }
 
-    readAbsoluteXFromPC() {
+    readAbsoluteX() {
         return this.memory.get8(this.readPC16() + this.x)
     }
 
-    readAbsoluteYFromPC() {
+    readAbsoluteY() {
         return this.memory.get8(this.readPC16() + this.y)
     }
 
     /** indexed indirect */
-    readIndirectXFromPC() {
+    readIndirectX() {
         return this.memory.get8(this.memory.get8((this.readPC() + this.x) % 256));
     }
 
     /** indirect indexed */
-    readIndirectYFromPC() {
+    readIndirectY() {
         return this.memory.get8((this.memory.get8(this.readPC()) + this.y) % 256);
     }
 
