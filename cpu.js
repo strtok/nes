@@ -197,6 +197,44 @@ let OpCodes = {
             let result = cpu.a - cpu.readPC();
             cpu.setFlag(Flag.CARRY, result >= 0);
             cpu.setNegativeAndZeroFlags(result);
+        }},
+        { op: 0xC5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            let result = cpu.a - cpu.readZeroPage();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        { op: 0xD5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
+            let result = cpu.a - cpu.readZeroPageX();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        { op: 0xCD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            let result = cpu.a - cpu.readAbsolute();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        // TODO: cycles is +1 if it crosses a page boundary
+        { op: 0xDD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            let result = cpu.a - cpu.readAbsoluteX();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        // TODO: cycles is +1 if it crosses a page boundary
+        { op: 0xD9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu) {
+            let result = cpu.a - cpu.readAbsoluteY();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        { op: 0xC1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
+            let result = cpu.a - cpu.readIndirectX();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        // TODO: cycles is +1 if it crosses a page boundary
+        { op: 0xD1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu) {
+            let result = cpu.a - cpu.readIndirectY();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
         }}
     ],
     EOR: [
