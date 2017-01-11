@@ -310,7 +310,36 @@ let OpCodes = {
     LDX: [
         { op: 0xA2, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             cpu.x = cpu.readPC();
-        }}
+        }},
+        { op: 0xA6, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu) {
+            cpu.x = cpu.readZeroPage();
+        }},
+        { op: 0xB6, mode: AddrMode.ZEROPAGE_Y, cycles: 2, exe: function(cpu) {
+            cpu.x = cpu.readZeroPageY();
+        }},
+        { op: 0xAE, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
+            cpu.x = cpu.readAbsolute();
+        }},
+        { op: 0xBE, mode: AddrMode.ABSOLUTE_Y, cycles: 3, exe: function(cpu) {
+            cpu.x = cpu.readAbsoluteY();
+        }},
+    ],
+    LDY: [
+        { op: 0xA0, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
+            cpu.y = cpu.readPC();
+        }},
+        { op: 0xA4, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu) {
+            cpu.y = cpu.readZeroPage();
+        }},
+        { op: 0xB4, mode: AddrMode.ZEROPAGE_X, cycles: 2, exe: function(cpu) {
+            cpu.y = cpu.readZeroPageX();
+        }},
+        { op: 0xAC, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
+            cpu.y = cpu.readAbsolute();
+        }},
+        { op: 0xBC, mode: AddrMode.ABSOLUTE_X, cycles: 3, exe: function(cpu) {
+            cpu.y = cpu.readAbsoluteX();
+        }},
     ],
     NOP: [
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
@@ -500,6 +529,10 @@ class CPU {
 
     readZeroPageX() {
         return this.memory.get8((this.readPC() + this.x) % 256)
+    }
+
+    readZeroPageY() {
+        return this.memory.get8((this.readPC() + this.y) % 256)
     }
 
     readAbsolute() {

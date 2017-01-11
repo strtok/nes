@@ -462,8 +462,38 @@ describe('CPU', () => {
             let cpu = makeCPU([0xA2, 0xEF]);
             cpu.execute();
             assert.equal(cpu.x, 0xEF);
-        })
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('ZEROPAGE_Y', () => {
+            let cpu = makeCPU([0xB6]);
+            cpu.p = Flag.NEGATIVE & Flag.ZERO;
+            cpu.y = 0x20;
+            cpu.memory.put8(cpu.y, 0x42);
+            cpu.execute();
+            assert.equal(cpu.x, 0x42);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.ZERO);
+        });
     });
+
+    describe('LDY', () => {
+        it('IMMEDIATE', () => {
+            let cpu = makeCPU([0xA0, 0xEF]);
+            cpu.execute();
+            assert.equal(cpu.y, 0xEF);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('ABSOLUTE', () => {
+            let cpu = makeCPU([0xA4, 0x20]);
+            cpu.p = Flag.NEGATIVE & Flag.ZERO;
+            cpu.memory.put8(0x20, 0x42);
+            cpu.execute();
+            assert.equal(cpu.y, 0x42);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.ZERO);
+        });
+    });
+
 
     describe('ORA', () => {
         it('(IMMEDIATE', () => {
