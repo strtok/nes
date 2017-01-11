@@ -194,64 +194,53 @@ let OpCodes = {
     ],
     CMP: [
         { op: 0xC9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
-            let result = cpu.a - cpu.readPC();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readPC());
         }},
         { op: 0xC5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
-            let result = cpu.a - cpu.readZeroPage();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readZeroPage());
         }},
         { op: 0xD5, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
-            let result = cpu.a - cpu.readZeroPageX();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readZeroPageX());
         }},
         { op: 0xCD, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
-            let result = cpu.a - cpu.readAbsolute();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readAbsolute());
         }},
         // TODO: cycles is +1 if it crosses a page boundary
         { op: 0xDD, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
-            let result = cpu.a - cpu.readAbsoluteX();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readAbsoluteX());
         }},
         // TODO: cycles is +1 if it crosses a page boundary
         { op: 0xD9, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu) {
-            let result = cpu.a - cpu.readAbsoluteY();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readAbsoluteY());
         }},
         { op: 0xC1, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
-            let result = cpu.a - cpu.readIndirectX();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readIndirectX());
         }},
         // TODO: cycles is +1 if it crosses a page boundary
         { op: 0xD1, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu) {
-            let result = cpu.a - cpu.readIndirectY();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.a - cpu.readIndirectY());
         }}
     ],
     CPX: [
         { op: 0xE0, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
-            let result = cpu.x - cpu.readPC();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.x - cpu.readPC());
         }},
         { op: 0xE4, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
-            let result = cpu.x - cpu.readZeroPage();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.x - cpu.readZeroPage());
         }},
         { op: 0xEC, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
-            let result = cpu.x - cpu.readAbsolute();
-            cpu.setFlag(Flag.CARRY, result >= 0);
-            cpu.setNegativeAndZeroFlags(result);
+            cpu.setComparisonFlags(cpu.x - cpu.readAbsolute());
+        }}
+    ],
+    CPY: [
+        { op: 0xC0, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
+            cpu.setComparisonFlags(cpu.y - cpu.readPC());
+        }},
+        { op: 0xC4, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.setComparisonFlags(cpu.y - cpu.readZeroPage());
+        }},
+        { op: 0xCC, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.setComparisonFlags(cpu.y - cpu.readAbsolute());
         }}
     ],
     EOR: [
@@ -411,6 +400,11 @@ class CPU {
     setNegativeAndZeroFlags(val) {
         this.copyFlagFrom(Flag.NEGATIVE, val);
         this.setFlag(Flag.ZERO, val == 0);
+    }
+
+    setComparisonFlags(val) {
+        this.setFlag(Flag.CARRY, val >= 0);
+        this.setNegativeAndZeroFlags(val);
     }
 
     set x(val) {

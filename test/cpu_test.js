@@ -369,6 +369,35 @@ describe('CPU', () => {
         });
     });
 
+    describe('CPY', () => {
+        it('IMMEDIATE a > m', () => {
+            let cpu = makeCPU([0xC0, 0xC0]);
+            cpu.y = 0xF0;
+            cpu.execute();
+            expect(cpu).not.flag(Flag.ZERO);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.CARRY);
+        });
+        it('ZEROPAGE a == m', () => {
+            let cpu = makeCPU([0xC4, 0x40]);
+            cpu.memory.put8(0x40,0xF0);
+            cpu.y = 0xF0;
+            cpu.execute();
+            expect(cpu).flag(Flag.ZERO);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.CARRY);
+        });
+        it('ABSOLUTE a < m', () => {
+            let cpu = makeCPU([0xCC, 0xFF, 0x03]);
+            cpu.memory.put8(0x03FF, 0x70);
+            cpu.y = 0x0F;
+            cpu.execute();
+            expect(cpu).not.flag(Flag.ZERO);
+            expect(cpu).flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.CARRY);
+        });
+    });
+
     describe('EOR', () => {
         it('(IMMEDIATE', () => {
             let cpu = makeCPU([0x49, 0b10101010]);
