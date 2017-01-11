@@ -77,7 +77,7 @@ let OpCodes = {
     BCC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readPC();
+            const offset = cpu.readRelativeFromPC();
             if ((cpu.p & Flag.CARRY) == 0) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -86,7 +86,7 @@ let OpCodes = {
     BCS: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xB0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = cpu.readPC();
+            const offset = cpu.readRelativeFromPC();
             if (cpu.p & Flag.CARRY) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -95,7 +95,7 @@ let OpCodes = {
     BEQ: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xF0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = tc(cpu.readPC());
+            const offset = cpu.readRelativeFromPC();
             if (cpu.p & Flag.ZERO) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -122,7 +122,7 @@ let OpCodes = {
     BNE: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = tc(cpu.readPC());
+            const offset = cpu.readRelativeFromPC();
             if (!(cpu.p & Flag.ZERO)) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -131,7 +131,7 @@ let OpCodes = {
     BMI: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x30, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = tc(cpu.readPC());
+            const offset = cpu.readRelativeFromPC();
             if (cpu.p & Flag.NEGATIVE) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -140,7 +140,7 @@ let OpCodes = {
     BPL: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x10, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = tc(cpu.readPC());
+            const offset = cpu.readRelativeFromPC();
             if (!(cpu.p & Flag.NEGATIVE)) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -149,7 +149,7 @@ let OpCodes = {
     BVC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x50, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = tc(cpu.readPC());
+            const offset = cpu.readRelativeFromPC();
             if (!(cpu.p & Flag.OVERFLOW)) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -158,7 +158,7 @@ let OpCodes = {
     BVS: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x70, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu, memory) {
-            const offset = tc(cpu.readPC());
+            const offset = cpu.readRelativeFromPC();
             if (cpu.p & Flag.OVERFLOW) {
                 cpu.pc = cpu.pc + offset;
             }
@@ -397,6 +397,9 @@ class CPU {
         return this.memory.get16(pc);
     }
 
+    readRelativeFromPC() {
+        return tc(this.readPC())
+    }
     readZeroPageFromPC() {
         return this.memory.get8(this.readPC())
     }
