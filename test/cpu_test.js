@@ -398,6 +398,33 @@ describe('CPU', () => {
         });
     });
 
+    describe('DEX', () => {
+        it('(IMPLICIT negative', () => {
+            let cpu = makeCPU([0xCA]);
+            cpu.x = 0;
+            cpu.execute();
+            assert.equal(cpu.x, -1);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('(IMPLICIT zero', () => {
+            let cpu = makeCPU([0xCA]);
+            cpu.x = 1;
+            cpu.execute();
+            assert.equal(cpu.x, 0);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.ZERO);
+        });
+    });
+
+    describe('DEY', () => {
+        it('(IMPLICIT', () => {
+            let cpu = makeCPU([0x88]);
+            cpu.y = 0;
+            cpu.execute();
+            assert.equal(cpu.y, -1);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+    });
     describe('EOR', () => {
         it('(IMMEDIATE', () => {
             let cpu = makeCPU([0x49, 0b10101010]);

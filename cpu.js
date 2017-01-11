@@ -243,6 +243,16 @@ let OpCodes = {
             cpu.setComparisonFlags(cpu.y - cpu.readAbsolute());
         }}
     ],
+    DEX: [
+        { op: 0xCA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.x--;
+        }},
+    ],
+    DEY: [
+        { op: 0x88, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.y--;
+        }},
+    ],
     EOR: [
         { op: 0x49, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.a ^= cpu.readPC();
