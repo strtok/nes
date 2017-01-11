@@ -119,20 +119,20 @@ let OpCodes = {
             cpu.setFlag(Flag.ZERO, masked == 0);
         }}
     ],
-    BNE: [
-        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
-        { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
-            const offset = cpu.readRelative();
-            if (!(cpu.p & Flag.ZERO)) {
-                cpu.pc = cpu.pc + offset;
-            }
-        }}
-    ],
     BMI: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x30, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
             const offset = cpu.readRelative();
             if (cpu.p & Flag.NEGATIVE) {
+                cpu.pc = cpu.pc + offset;
+            }
+        }}
+    ],
+    BNE: [
+        // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
+        { op: 0xD0, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
+            const offset = cpu.readRelative();
+            if (!(cpu.p & Flag.ZERO)) {
                 cpu.pc = cpu.pc + offset;
             }
         }}
@@ -144,6 +144,14 @@ let OpCodes = {
             if (!(cpu.p & Flag.NEGATIVE)) {
                 cpu.pc = cpu.pc + offset;
             }
+        }}
+    ],
+    BRK: [
+        { op: 0x00, mode: AddrMode.IMPLICIT, cycles: 7, exe: function(cpu) {
+            cpu.push16(cpu.pc);
+            cpu.push8(cpu.p | Flag.BREAK);
+            // TODO: Read this address from the ROM
+            cpu.pc = cpu.memory.get16(0xFFFE);
         }}
     ],
     BVC: [

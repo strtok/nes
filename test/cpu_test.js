@@ -203,6 +203,19 @@ describe('CPU', () => {
         });
     });
 
+    describe('BRK', () => {
+        it('IMPLICIT', () => {
+            let cpu = makeCPU([0x00]);
+            // TODO: Set the IRQ vector on the ROM and test we jumped to it
+            // cpu.memory.put16(0xFFFE, 0xAABB)
+            let last_pc = cpu.pc;
+            cpu.execute();
+            // assert.equal(cpu.pc, 0xAA);
+            assert.equal(cpu.pop8() & Flag.BREAK, Flag.BREAK);
+            assert.equal(cpu.pop16(), last_pc+1);
+        })
+    });
+
     describe('BIT', () => {
         it('ZEROPAGE with mask=0xFF and mem=OVERFLOW', () => {
             let cpu = makeCPU([0x24, 0x00]);
