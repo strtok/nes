@@ -237,6 +237,23 @@ let OpCodes = {
             cpu.setNegativeAndZeroFlags(result);
         }}
     ],
+    CPX: [
+        { op: 0xE0, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
+            let result = cpu.x - cpu.readPC();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        { op: 0xE4, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            let result = cpu.x - cpu.readZeroPage();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }},
+        { op: 0xEC, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            let result = cpu.x - cpu.readAbsolute();
+            cpu.setFlag(Flag.CARRY, result >= 0);
+            cpu.setNegativeAndZeroFlags(result);
+        }}
+    ],
     EOR: [
         { op: 0x49, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.a ^= cpu.readPC();
