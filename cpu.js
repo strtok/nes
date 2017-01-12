@@ -498,7 +498,7 @@ class CPU {
     }
 
     setComparisonFlags(val) {
-        this.setFlag(Flag.CARRY, signed(val) >= 0);
+        this.setFlag(Flag.CARRY, val >= 0);
         this.setNegativeAndZeroFlags(val);
     }
 
