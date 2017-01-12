@@ -403,7 +403,7 @@ describe('CPU', () => {
             let cpu = makeCPU([0xCA]);
             cpu.x = 0;
             cpu.execute();
-            assert.equal(cpu.x, -1);
+            assert.equal(cpu.x, 0xFF);
             expect(cpu).flag(Flag.NEGATIVE);
         });
         it('(IMPLICIT zero', () => {
@@ -421,10 +421,11 @@ describe('CPU', () => {
             let cpu = makeCPU([0x88]);
             cpu.y = 0;
             cpu.execute();
-            assert.equal(cpu.y, -1);
+            assert.equal(cpu.y, 0xFF);
             expect(cpu).flag(Flag.NEGATIVE);
         });
     });
+
     describe('EOR', () => {
         it('(IMMEDIATE', () => {
             let cpu = makeCPU([0x49, 0b10101010]);
@@ -439,6 +440,35 @@ describe('CPU', () => {
             cpu.a = 0b11110000;
             cpu.execute();
             assert.equal(cpu.a, 0b01011010);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+        });
+    });
+
+    describe('INX', () => {
+        it('(IMPLICIT negative', () => {
+            let cpu = makeCPU([0xE8]);
+            cpu.x = 0xFE;
+            cpu.execute();
+            assert.equal(cpu.x, 0xFF);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('(IMPLICIT zero', () => {
+            let cpu = makeCPU([0xE8]);
+            cpu.x = 0xFF;
+            cpu.execute();
+            assert.equal(cpu.x, 0);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.ZERO);
+            expect(cpu).not.flag(Flag.CARRY); // don't touch CARRY
+        });
+    });
+
+    describe('INY', () => {
+        it('(IMPLICIT', () => {
+            let cpu = makeCPU([0xC8]);
+            cpu.y = 0;
+            cpu.execute();
+            assert.equal(cpu.y, 1);
             expect(cpu).not.flag(Flag.NEGATIVE);
         });
     });

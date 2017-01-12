@@ -3,6 +3,8 @@
      http://wiki.nesdev.com/w/index.php/NES_2.0
  */
 
+"use strict";
+
 let assert = require("assert");
 const _ = require("underscore");
 let debug = require("debug")("nes:rom");

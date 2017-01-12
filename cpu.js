@@ -1,8 +1,11 @@
+"use strict";
+
 const debug = require('./debug')('nes:cpu');
 const _ = require('underscore');
 const printf = require('printf');
 const rightpad = require('rightpad');
-var tc = require("./math.js").tc;
+const math = require("./math.js");
+const signed = math.signed;
 
 let AddrMode = {
     ABSOLUTE:   1,
@@ -245,12 +248,12 @@ let OpCodes = {
     ],
     DEX: [
         { op: 0xCA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
-            cpu.x--;
+            cpu.x = math.wrap(cpu.x - 1);
         }},
     ],
     DEY: [
         { op: 0x88, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
-            cpu.y--;
+            cpu.y = math.wrap(cpu.y - 1);
         }},
     ],
     EOR: [
@@ -279,6 +282,16 @@ let OpCodes = {
             cpu.a ^= cpu.readIndirectY();
         }}
 
+    ],
+    INX: [
+        { op: 0xE8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.x = math.wrap(cpu.x + 1);
+        }},
+    ],
+    INY: [
+        { op: 0xC8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.y = math.wrap(cpu.y + 1);
+        }},
     ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
@@ -479,13 +492,13 @@ class CPU {
     }
 
     setComparisonFlags(val) {
-        this.setFlag(Flag.CARRY, val >= 0);
+        this.setFlag(Flag.CARRY, signed(val) >= 0);
         this.setNegativeAndZeroFlags(val);
     }
 
     set x(val) {
-        this.setNegativeAndZeroFlags(val);
         this._x = val;
+        this.setNegativeAndZeroFlags(val);
     }
 
     get x() {
@@ -493,8 +506,8 @@ class CPU {
     }
 
     set y(val) {
-        this.setNegativeAndZeroFlags(val);
         this._y = val;
+        this.setNegativeAndZeroFlags(val);
     }
 
     get y() {
@@ -502,8 +515,8 @@ class CPU {
     }
 
     set a(val) {
-        this.setNegativeAndZeroFlags(val);
         this._a = val;
+        this.setNegativeAndZeroFlags(val);
     }
 
     get a() {
@@ -531,7 +544,7 @@ class CPU {
     }
 
     readRelative() {
-        return tc(this.readPC())
+        return signed(this.readPC())
     }
     readZeroPage() {
         return this.memory.get8(this.readPC())
@@ -619,7 +632,7 @@ class CPU {
                     disasm.push("Y");
                     break;
                 case AddrMode.RELATIVE:
-                    const val = tc(this.memory.get8(addr + 1));
+                    const val = signed(this.memory.get8(addr + 1));
                     if (val > 0)
                         disasm.push(printf("*+$%02X", val));
                     else
