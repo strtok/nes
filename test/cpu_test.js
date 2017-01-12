@@ -638,6 +638,39 @@ describe('CPU', () => {
         })
     });
 
+    describe('SBC', () => {
+        it('IMMEDIATE', () => {
+            let cpu = makeCPU([0xE9, 0x10]);
+            cpu.a = 0x20;
+            cpu.p |= Flag.CARRY;
+            cpu.execute();
+            assert.equal(cpu.a, 0x10);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).flag(Flag.CARRY);
+        });
+        it('IMMEDIATE negative', () => {
+            let cpu = makeCPU([0xE9, 0x30]);
+            cpu.a = 0x20;
+            cpu.p |= Flag.CARRY;
+            cpu.execute();
+            assert.equal(cpu.a, 0xF0);
+            expect(cpu).flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.CARRY);
+        });
+        it('IMMEDIATE overflow', () => {
+            let cpu = makeCPU([0xE9, 0x10]);
+            cpu.a = 0x80;
+            cpu.p |= Flag.CARRY;
+            cpu.execute();
+            assert.equal(cpu.a, 0x70);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.OVERFLOW);
+            expect(cpu).flag(Flag.CARRY);
+        });
+    });
+
     describe('SEC', () => {
         it('IMPLICIT', () => {
             let cpu = makeCPU([0x38]);

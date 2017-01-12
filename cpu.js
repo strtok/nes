@@ -427,6 +427,16 @@ let OpCodes = {
             cpu.pc = cpu.pop16() + 1;
         }}
     ],
+    SBC: [
+        { op: 0xE9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
+            let val = cpu.readPC();
+            let result = cpu.a - val - ((cpu.p & Flag.CARRY) ? 0 : 1);
+
+            cpu.setFlag(Flag.OVERFLOW, ((cpu.a ^ result) & (cpu.a ^ val) & 0x80) != 0);
+            cpu.setFlag(Flag.CARRY, result <= 0xFF && result >= 0);
+            cpu.a = math.wrap(result);
+        }},
+    ],
     SEC: [
         { op: 0x38, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu) {
             cpu.p |= Flag.CARRY;
