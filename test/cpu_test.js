@@ -46,14 +46,24 @@ describe('CPU', () => {
             expect(cpu).not.flag(Flag.OVERFLOW);
             expect(cpu).not.flag(Flag.CARRY);
         });
-        it('IMMEDIATE unsigned overflow', () => {
+        it('IMMEDIATE signed overflow', () => {
             let cpu = makeCPU([0x69, 0x20]);
-            cpu.a = 0xF0;
+            cpu.a = 0x70;
+            cpu.execute();
+            assert.equal(cpu.a, 0x90);
+            expect(cpu).flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.OVERFLOW);
+            expect(cpu).not.flag(Flag.CARRY);
+        });
+
+        it('IMMEDIATE carry', () => {
+            let cpu = makeCPU([0x69, 0xF0]);
+            cpu.a = 0x20;
             cpu.execute();
             assert.equal(cpu.a, 0x10);
             expect(cpu).not.flag(Flag.NEGATIVE);
             expect(cpu).not.flag(Flag.OVERFLOW);
-            expect(cpu).not.flag(Flag.CARRY);
+            expect(cpu).flag(Flag.CARRY);
         });
     });
 

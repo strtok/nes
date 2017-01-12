@@ -48,7 +48,13 @@ let Flag = {
 let OpCodes = {
     ADC: [
         { op: 0x69, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
-            cpu.a = (cpu.a + cpu.readPC()) % 0x100;
+            let val = cpu.readPC();
+            let result = cpu.a + val + (cpu.p & Flag.CARRY != 0);
+
+            // see http://www.righto.com/2012/12/the-6502-overflow-flag-explained.html
+            cpu.setFlag(Flag.OVERFLOW, ((cpu.a^result) & (val^result) & 0x80) != 0);
+            cpu.setFlag(Flag.CARRY, result > 0xFF);
+            cpu.a = math.wrap(result);
         }},
     ],
     AND: [
@@ -608,14 +614,14 @@ class CPU {
             disasm.push(op.opstr);
             switch (op.mode) {
                 case AddrMode.ABSOLUTE:
-                    disasm.push(printf("$%04X", this.memory.get8(addr + 1)));
+                    disasm.push(printf("$%04X", this.memory.get16(addr + 1)));
                     break;
                 case AddrMode.ABSOLUTE_X:
-                    disasm.push(printf("$%04X", this.memory.get8(addr + 1)));
+                    disasm.push(printf("$%04X", this.memory.get16(addr + 1)));
                     disasm.push("X");
                     break;
                 case AddrMode.ABSOLUTE_Y:
-                    disasm.push(printf("$%04X", this.memory.get8(addr + 1)));
+                    disasm.push(printf("$%04X", this.memory.get16(addr + 1)));
                     disasm.push("Y");
                     break;
                 case AddrMode.IMMEDIATE:
