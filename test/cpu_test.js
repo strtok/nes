@@ -707,10 +707,20 @@ describe('CPU', () => {
 
     describe('STX', () => {
         it('ZEROPAGE', () => {
-            let cpu = makeCPU([0x86, 0x00]);
+            let cpu = makeCPU([0x86, 0x10]);
             cpu.x = 0x42;
             cpu.execute();
-            assert.equal(cpu.memory.get8(0x00), 0x42);
+            assert.equal(cpu.memory.get8(0x10), 0x42);
+            expect(cpu).not.flag(Flag.ZERO);
+        })
+    });
+
+    describe('STY', () => {
+        it('ZEROPAGE', () => {
+            let cpu = makeCPU([0x84, 0x10]);
+            cpu.y = 0x42;
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x10), 0x42);
             expect(cpu).not.flag(Flag.ZERO);
         })
     });

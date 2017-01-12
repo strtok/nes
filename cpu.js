@@ -459,7 +459,24 @@ let OpCodes = {
     ],
     STX: [
         { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
-            cpu.memory.put8(cpu.readPC(), cpu.x);
+            cpu.writeZeroPage(cpu.x);
+        }},
+        { op: 0x96, mode: AddrMode.ZEROPAGE_Y, cycles: 4, exe: function(cpu) {
+            cpu.writeZeroPageY(cpu.x);
+        }},
+        { op: 0x8E, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.writeAbsolute(cpu.x);
+        }}
+    ],
+    STY: [
+        { op: 0x84, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.writeZeroPage(cpu.y);
+        }},
+        { op: 0x94, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
+            cpu.writeZeroPageX(cpu.y);
+        }},
+        { op: 0x8C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.writeAbsolute(cpu.y);
         }}
     ],
     TAX: [
@@ -592,6 +609,7 @@ class CPU {
     readRelative() {
         return signed(this.readPC())
     }
+
     readZeroPage() {
         return this.memory.get8(this.readPC())
     }
@@ -626,6 +644,22 @@ class CPU {
         return this.memory.get8((this.memory.get8(this.readPC()) + this.y) % 256);
     }
 
+    writeZeroPage(val) {
+        return this.memory.put8(this.readPC(), val)
+    }
+
+    writeZeroPageX(val) {
+        return this.memory.put8((this.readPC() + this.x) % 256, val)
+    }
+
+    writeZeroPageY(val) {
+        return this.memory.put8((this.readPC() + this.y) % 256, val)
+    }
+
+    writeAbsolute(val) {
+        return this.memory.put8(this.readPC16(), val)
+    }
+    
     // push value on stack
     push8(val) {
         this.memory.put8(this.sp + 0x100, val);
