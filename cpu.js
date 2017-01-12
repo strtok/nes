@@ -461,6 +461,36 @@ let OpCodes = {
         { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.memory.put8(cpu.readPC(), cpu.x);
         }}
+    ],
+    TAX: [
+        { op: 0xAA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.x = cpu.a;
+        }}
+    ],
+    TAY: [
+        { op: 0xA8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.y = cpu.a;
+        }}
+    ],
+    TSX: [
+        { op: 0xBA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.x = cpu.sp;
+        }}
+    ],
+    TXA: [
+        { op: 0x8A, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.a = cpu.x;
+        }}
+    ],
+    TXS: [
+        { op: 0x9A, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.sp = cpu.x;
+        }}
+    ],
+    TYA: [
+        { op: 0x98, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+            cpu.a = cpu.y;
+        }}
     ]
 };
 
