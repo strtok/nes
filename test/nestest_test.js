@@ -5,7 +5,7 @@ let CPU = require('../cpu').CPU;
 let Flag = require('../cpu').Flag;
 let nestest = require('./nestest_rom');
 let log = require('./nestest_log').log;
-let toBits = require('../math').toBits
+let printf = require('printf');
 
 describe('nestest', () => {
     it('executes as expected', function() {
@@ -13,12 +13,12 @@ describe('nestest', () => {
         let memory = new Memory(rom.prgRom);
         let cpu = new CPU(memory);
 
+        const registers = ['pc', 'a', 'x', 'y', 'sp'];
+
         for (let i = 0; i < log.length; i++) {
-            assert.equal(cpu.pc, log[i].pc, "pc");
-            assert.equal(cpu.a, log[i].a, "a");
-            assert.equal(cpu.x, log[i].x, "x");
-            assert.equal(cpu.y, log[i].y, "y");
-            assert.equal(cpu.sp, log[i].sp, "sp");
+            for (let r of registers) {
+                assert.equal(printf("0x%02X", cpu[r]), printf("0x%02X", log[i][r]), r);
+            }
 
             assert(cpu.p == log[i].p, `expected P: ${Flag.toString(log[i].p)}, but was P: ${Flag.toString(cpu.p)}`);
 
