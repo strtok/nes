@@ -375,6 +375,30 @@ let OpCodes = {
         { op: 0x4A, mode: AddrMode.ACCUMULATOR, cycles: 2, exe: function(cpu) {
             cpu.setFlag(Flag.CARRY, cpu.a & 1);
             cpu.a >>= 1;
+        }},
+        { op: 0x46, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 1);
+            cpu.memory.put8(addr, val >> 1);
+        }},
+        { op: 0x56, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 1);
+            cpu.memory.put8(addr, val >> 1);
+        }},
+        { op: 0x4E, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 1);
+            cpu.memory.put8(addr, val >> 1);
+        }},
+        { op: 0x5E, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 1);
+            cpu.memory.put8(addr, val >> 1);
         }}
     ],
     NOP: [
@@ -619,42 +643,74 @@ class CPU {
         return this.memory.get16(pc);
     }
 
+    zeroPageAddress() {
+        return this.readPC();
+    }
+
+    zeroPageXAddress() {
+        return (this.readPC() + this.x) % 256;
+    }
+
+    zeroPageYAddress() {
+        return (this.readPC() + this.y) % 256;
+    }
+
+    absoluteAddress() {
+        return this.readPC16();
+    }
+
+    absoluteXAddress() {
+        return this.readPC16() + this.x;
+    }
+
+    absoluteYAddress() {
+        return this.readPC16() + this.y;
+    }
+
+    indirectXAddress() {
+        return this.memory.get8((this.readPC() + this.x) % 256);
+    }
+
+    indirectYAddress() {
+        return (this.memory.get8(this.readPC()) + this.y) % 256;
+    }
+
     readRelative() {
         return signed(this.readPC())
     }
 
     readZeroPage() {
-        return this.memory.get8(this.readPC())
+        return this.memory.get8(this.zeroPageAddress())
     }
 
     readZeroPageX() {
-        return this.memory.get8((this.readPC() + this.x) % 256)
+        return this.memory.get8(this.zeroPageXAddress())
     }
 
     readZeroPageY() {
-        return this.memory.get8((this.readPC() + this.y) % 256)
+        return this.memory.get8(this.zeroPageYAddress())
     }
 
     readAbsolute() {
-        return this.memory.get8(this.readPC16())
+        return this.memory.get8(this.absoluteAddress())
     }
 
     readAbsoluteX() {
-        return this.memory.get8(this.readPC16() + this.x)
+        return this.memory.get8(this.absoluteXAddress())
     }
 
     readAbsoluteY() {
-        return this.memory.get8(this.readPC16() + this.y)
+        return this.memory.get8(this.absoluteYAddress())
     }
 
     /** indexed indirect */
     readIndirectX() {
-        return this.memory.get8(this.memory.get8((this.readPC() + this.x) % 256));
+        return this.memory.get8(this.indirectXAddress());
     }
 
     /** indirect indexed */
     readIndirectY() {
-        return this.memory.get8((this.memory.get8(this.readPC()) + this.y) % 256);
+        return this.memory.get8(this.indirectYAddress());
     }
 
     writeZeroPage(val) {
@@ -662,11 +718,11 @@ class CPU {
     }
 
     writeZeroPageX(val) {
-        return this.memory.put8((this.readPC() + this.x) % 256, val)
+        return this.memory.put8(this.zeroPageXAddress(), val)
     }
 
     writeZeroPageY(val) {
-        return this.memory.put8((this.readPC() + this.y) % 256, val)
+        return this.memory.put8(this.zeroPageYAddress(), val)
     }
 
     writeAbsolute(val) {

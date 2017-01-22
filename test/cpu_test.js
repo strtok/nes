@@ -569,6 +569,13 @@ describe('CPU', () => {
             assert.equal(cpu.a, 0x78);
             expect(cpu).flag(Flag.CARRY);
         });
+        it('ZEROPAGE', () => {
+            let cpu = makeCPU([0x46, 0x20]);
+            cpu.memory.put8(0x20, 0xC);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x20), 0x6);
+            expect(cpu).not.flag(Flag.CARRY);
+        });
     });
 
     describe('ORA', () => {
