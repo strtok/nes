@@ -649,8 +649,26 @@ let OpCodes = {
     ],
     STA: [
         { op: 0x85, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
-            cpu.memory.put8(cpu.readPC(), cpu.a);
-        }}
+            cpu.writeZeroPage(cpu.a);
+        }},
+        { op: 0x95, mode: AddrMode.ZEROPAGE_X, cycles: 4, exe: function(cpu) {
+            cpu.writeZeroPageX(cpu.a);
+        }},
+        { op: 0x8D, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.writeAbsolute(cpu.a);
+        }},
+        { op: 0x9D, mode: AddrMode.ABSOLUTE_X, cycles: 3, exe: function(cpu) {
+            cpu.writeAbsoluteX(cpu.a);
+        }},
+        { op: 0x99, mode: AddrMode.ABSOLUTE_Y, cycles: 5, exe: function(cpu) {
+            cpu.writeAbsoluteY(cpu.a);
+        }},
+        { op: 0x81, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
+            cpu.writeIndirectX(cpu.a);
+        }},
+        { op: 0x91, mode: AddrMode.INDIRECT_Y, cycles: 6, exe: function(cpu) {
+            cpu.writeIndirectY(cpu.a);
+        }},
     ],
     STX: [
         { op: 0x86, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
@@ -826,11 +844,11 @@ class CPU {
     }
 
     indirectXAddress() {
-        return this.memory.get8((this.readPC() + this.x) % 256);
+        return this.memory.get16((this.readPC() + this.x) & 0xFF);
     }
 
     indirectYAddress() {
-        return (this.memory.get8(this.readPC()) + this.y) % 256;
+        return this.memory.get16(this.readPC()) + this.y;
     }
 
     readRelative() {
@@ -886,7 +904,23 @@ class CPU {
     writeAbsolute(val) {
         return this.memory.put8(this.readPC16(), val)
     }
-    
+
+    writeAbsoluteX(val) {
+        return this.memory.put8(this.absoluteXAddress(), val)
+    }
+
+    writeAbsoluteY(val) {
+        return this.memory.put8(this.absoluteYAddress(), val)
+    }
+
+    writeIndirectX(val) {
+        return this.memory.put8(this.indirectXAddress(), val)
+    }
+
+    writeIndirectY(val) {
+        return this.memory.put8(this.indirectYAddress(), val)
+    }
+
     // push value on stack
     push8(val) {
         this.memory.put8(this.sp + 0x100, val);
@@ -930,8 +964,7 @@ class CPU {
                 case AddrMode.IMPLICIT:
                     break;
                 case AddrMode.INDIRECT_X:
-                    disasm.push(printf("($%04X)", this.memory.get8(addr + 1)));
-                    disasm.push("X");
+                    disasm.push(printf("($%04X, X)", this.memory.get8(addr + 1)));
                     break;
                 case AddrMode.INDIRECT_Y:
                     disasm.push(printf("($%04X)", this.memory.get8(addr + 1)));
