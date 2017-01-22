@@ -670,6 +670,64 @@ describe('CPU', () => {
         })
     });
 
+    describe('ROL', () => {
+        it('ACCUMULATOR', () => {
+            let cpu = makeCPU([0x2A]);
+            cpu.a = 0x81;
+            cpu.execute();
+            assert.equal(cpu.a, 0x2);
+            expect(cpu).flag(Flag.CARRY);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+        });
+        it('ACCUMULATOR with carry', () => {
+            let cpu = makeCPU([0x2A]);
+            cpu.p |= Flag.CARRY;
+            cpu.a = 0x41;
+            cpu.execute();
+            assert.equal(cpu.a, 0x83);
+            expect(cpu).not.flag(Flag.CARRY);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('ZEROPAGE', () => {
+            let cpu = makeCPU([0x26, 0x20]);
+            cpu.p |= Flag.CARRY;
+            cpu.memory.put8(0x20, 0x41);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x20), 0x83);
+            expect(cpu).not.flag(Flag.CARRY);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+    });
+
+    describe('ROR', () => {
+        it('ACCUMULATOR', () => {
+            let cpu = makeCPU([0x6A]);
+            cpu.a = 0x81;
+            cpu.execute();
+            assert.equal(cpu.a, 0x40);
+            expect(cpu).flag(Flag.CARRY);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+        });
+        it('ACCUMULATOR with carry', () => {
+            let cpu = makeCPU([0x6A]);
+            cpu.p |= Flag.CARRY;
+            cpu.a = 0x42;
+            cpu.execute();
+            assert.equal(cpu.a, 0xA1);
+            expect(cpu).not.flag(Flag.CARRY);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('ZEROPAGE', () => {
+            let cpu = makeCPU([0x66, 0x20]);
+            cpu.p |= Flag.CARRY;
+            cpu.memory.put8(0x20, 0x41);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x20), 0xA0);
+            expect(cpu).flag(Flag.CARRY);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+    });
+
     describe('RTI', () => {
         it('ABSOLUTE', () => {
             let cpu = makeCPU([0x40]);

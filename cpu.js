@@ -491,6 +491,126 @@ let OpCodes = {
             cpu.p = cpu.pop8();
         }}
     ],
+    ROL: [
+        { op: 0x2A, mode: AddrMode.ACCUMULATOR, cycles: 2, exe: function(cpu) {
+            let val = cpu.a;
+            val <<= 1;
+            if (cpu.p & Flag.CARRY) {
+                val |= 0x01;
+            }
+            cpu.setFlag(Flag.CARRY, val > 0xFF);
+            val &= 0xFF;
+            cpu.a = val;
+        }},
+        { op: 0x26, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            let val = cpu.memory.get8(addr);
+            val <<= 1;
+            if (cpu.p & Flag.CARRY) {
+                val |= 0x01;
+            }
+            cpu.setFlag(Flag.CARRY, val > 0xFF);
+            val &= 0xFF;
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0x36, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            let val = cpu.memory.get8(addr);
+            val <<= 1;
+            if (cpu.p & Flag.CARRY) {
+                val |= 0x01;
+            }
+            cpu.setFlag(Flag.CARRY, val > 0xFF);
+            val &= 0xFF;
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0x2E, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            let val = cpu.memory.get8(addr);
+            val <<= 1;
+            if (cpu.p & Flag.CARRY) {
+                val |= 0x01;
+            }
+            cpu.setFlag(Flag.CARRY, val > 0xFF);
+            val &= 0xFF;
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0x3E, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            let val = cpu.memory.get8(addr);
+            val <<= 1;
+            if (cpu.p & Flag.CARRY) {
+                val |= 0x01;
+            }
+            cpu.setFlag(Flag.CARRY, val > 0xFF);
+            val &= 0xFF;
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }}
+    ],
+    ROR: [
+        { op: 0x6A, mode: AddrMode.ACCUMULATOR, cycles: 2, exe: function(cpu) {
+            const carry = cpu.p & Flag.CARRY;
+            let val = cpu.a;
+            cpu.setFlag(Flag.CARRY, val & 0x01);
+            val >>>= 1;
+            if (carry) {
+                val |= 0x80;
+            }
+            cpu.a = val;
+        }},
+        { op: 0x66, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            const carry = cpu.p & Flag.CARRY;
+            let val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x01);
+            val >>>= 1;
+            if (carry) {
+                val |= 0x80;
+            }
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0x76, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            const carry = cpu.p & Flag.CARRY;
+            let val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x01);
+            val >>>= 1;
+            if (carry) {
+                val |= 0x80;
+            }
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0x6E, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            const carry = cpu.p & Flag.CARRY;
+            let val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x01);
+            val >>>= 1;
+            if (carry) {
+                val |= 0x80;
+            }
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0x7E, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            const carry = cpu.p & Flag.CARRY;
+            let val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x01);
+            val >>>= 1;
+            if (carry) {
+                val |= 0x80;
+            }
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }}
+    ],
     RTI: [
         { op: 0x40, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu) {
             cpu.p = cpu.pop8();
