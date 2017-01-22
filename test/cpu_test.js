@@ -629,6 +629,17 @@ describe('CPU', () => {
         })
     });
 
+    describe('RTI', () => {
+        it('ABSOLUTE', () => {
+            let cpu = makeCPU([0x40]);
+            cpu.push16(0xABCD);
+            cpu.push8(0xEF);
+            cpu.execute();
+            assert.equal(cpu.p, 0xEF);
+            assert.equal(cpu.pc, 0xABCD);
+        })
+    });
+
     describe('RTS', () => {
         it('IMPLICIT', () => {
             let cpu = makeCPU([0x60]);

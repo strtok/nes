@@ -422,6 +422,12 @@ let OpCodes = {
             cpu.p = cpu.pop8();
         }}
     ],
+    RTI: [
+        { op: 0x40, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu) {
+            cpu.p = cpu.pop8();
+            cpu.pc = cpu.pop16();
+        }}
+    ],
     RTS: [
         { op: 0x60, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu) {
             cpu.pc = cpu.pop16() + 1;
