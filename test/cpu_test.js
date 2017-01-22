@@ -561,6 +561,15 @@ describe('CPU', () => {
         });
     });
 
+    describe('LSR', () => {
+        it('ACCUMULATOR', () => {
+            let cpu = makeCPU([0x4A]);
+            cpu.a = 0xF1;
+            cpu.execute();
+            assert.equal(cpu.a, 0x78);
+            expect(cpu).flag(Flag.CARRY);
+        });
+    });
 
     describe('ORA', () => {
         it('(IMMEDIATE', () => {

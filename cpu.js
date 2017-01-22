@@ -18,7 +18,8 @@ let AddrMode = {
     RELATIVE:   8,
     ZEROPAGE:   9,
     ZEROPAGE_X: 10,
-    ZEROPAGE_Y: 11
+    ZEROPAGE_Y: 11,
+    ACCUMULATOR: 12
 };
 
 let Flag = {
@@ -369,6 +370,12 @@ let OpCodes = {
         { op: 0xBC, mode: AddrMode.ABSOLUTE_X, cycles: 3, exe: function(cpu) {
             cpu.y = cpu.readAbsoluteX();
         }},
+    ],
+    LSR: [
+        { op: 0x4A, mode: AddrMode.ACCUMULATOR, cycles: 2, exe: function(cpu) {
+            cpu.setFlag(Flag.CARRY, cpu.a & 1);
+            cpu.a >>= 1;
+        }}
     ],
     NOP: [
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
@@ -734,6 +741,8 @@ class CPU {
                     disasm.push(printf("$%02X", this.memory.get8(addr + 1)));
                     disasm.push("Y");
                     break;
+                case AddrMode.ACCUMULATOR:
+                    disasm.push("A");
             }
 
             return disasm;
