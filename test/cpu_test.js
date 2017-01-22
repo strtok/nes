@@ -85,6 +85,24 @@ describe('CPU', () => {
         });
     });
 
+    describe('ASL', () => {
+        it('ACCUMULATOR', () => {
+            let cpu = makeCPU([0x0A]);
+            cpu.a = 0x81;
+            cpu.execute();
+            assert.equal(cpu.a, 2);
+            expect(cpu).flag(Flag.CARRY);
+        });
+        it('ZEROPAGE', () => {
+            let cpu = makeCPU([0x06, 0x20]);
+            cpu.memory.put8(0x20, 0x44);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x20), 0x88);
+            expect(cpu).not.flag(Flag.CARRY);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+    });
+
     describe('BCC', () => {
         it('RELATIVE with carry=1', () => {
             let cpu = makeCPU([0x90, 0x10]);
@@ -564,17 +582,24 @@ describe('CPU', () => {
     describe('LSR', () => {
         it('ACCUMULATOR', () => {
             let cpu = makeCPU([0x4A]);
+            cpu.p |= Flag.NEGATIVE;
+            cpu.p |= Flag.ZERO;
             cpu.a = 0xF1;
             cpu.execute();
             assert.equal(cpu.a, 0x78);
             expect(cpu).flag(Flag.CARRY);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).not.flag(Flag.ZERO);
         });
         it('ZEROPAGE', () => {
             let cpu = makeCPU([0x46, 0x20]);
+            cpu.p |= Flag.NEGATIVE;
+            cpu.p |= Flag.ZERO;
             cpu.memory.put8(0x20, 0xC);
             cpu.execute();
             assert.equal(cpu.memory.get8(0x20), 0x6);
             expect(cpu).not.flag(Flag.CARRY);
+            expect(cpu).not.flag(Flag.NEGATIVE);
         });
     });
 

@@ -84,6 +84,40 @@ let OpCodes = {
             cpu.a &= cpu.readIndirectY();
         }}
     ],
+    ASL: [
+        { op: 0x0A, mode: AddrMode.ACCUMULATOR, cycles: 2, exe: function(cpu) {
+            cpu.setFlag(Flag.CARRY, cpu.a & 0x80);
+            cpu.a = (cpu.a << 1) & 0xFF;
+        }},
+        { op: 0x06, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x80);
+            cpu.setNegativeAndZeroFlags(val << 1);
+            cpu.memory.put8(addr, val << 1);
+        }},
+        { op: 0x16, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x80);
+            cpu.setNegativeAndZeroFlags(val << 1);
+            cpu.memory.put8(addr, val << 1);
+        }},
+        { op: 0x0E, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x80);
+            cpu.setNegativeAndZeroFlags(val << 1);
+            cpu.memory.put8(addr, val << 1);
+        }},
+        { op: 0x1E, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            const val = cpu.memory.get8(addr);
+            cpu.setFlag(Flag.CARRY, val & 0x80);
+            cpu.setNegativeAndZeroFlags(val << 1);
+            cpu.memory.put8(addr, val << 1);
+        }}
+    ],
     BCC: [
         // TODO: cycles is +1 if branch succeeded and +2 if it crosses a page boundry
         { op: 0x90, mode: AddrMode.RELATIVE, cycles: 2, exe: function(cpu) {
@@ -374,31 +408,35 @@ let OpCodes = {
     LSR: [
         { op: 0x4A, mode: AddrMode.ACCUMULATOR, cycles: 2, exe: function(cpu) {
             cpu.setFlag(Flag.CARRY, cpu.a & 1);
-            cpu.a >>= 1;
+            cpu.a >>>= 1;
         }},
         { op: 0x46, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
             const addr = cpu.zeroPageAddress();
             const val = cpu.memory.get8(addr);
             cpu.setFlag(Flag.CARRY, val & 1);
-            cpu.memory.put8(addr, val >> 1);
+            cpu.setNegativeAndZeroFlags(val >>> 1);
+            cpu.memory.put8(addr, val >>> 1);
         }},
         { op: 0x56, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
             const addr = cpu.zeroPageXAddress();
             const val = cpu.memory.get8(addr);
             cpu.setFlag(Flag.CARRY, val & 1);
-            cpu.memory.put8(addr, val >> 1);
+            cpu.setNegativeAndZeroFlags(val >>> 1);
+            cpu.memory.put8(addr, val >>> 1);
         }},
         { op: 0x4E, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
             const addr = cpu.absoluteAddress();
             const val = cpu.memory.get8(addr);
             cpu.setFlag(Flag.CARRY, val & 1);
-            cpu.memory.put8(addr, val >> 1);
+            cpu.setNegativeAndZeroFlags(val >>> 1);
+            cpu.memory.put8(addr, val >>> 1);
         }},
         { op: 0x5E, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
             const addr = cpu.absoluteXAddress();
             const val = cpu.memory.get8(addr);
             cpu.setFlag(Flag.CARRY, val & 1);
-            cpu.memory.put8(addr, val >> 1);
+            cpu.setNegativeAndZeroFlags(val >>> 1);
+            cpu.memory.put8(addr, val >>> 1);
         }}
     ],
     NOP: [
