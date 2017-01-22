@@ -496,7 +496,7 @@ describe('CPU', () => {
             let cpu = makeCPU([0x20, 0xBC, 0xCA]);
             cpu.execute();
             assert.equal(cpu.pc, 0xCABC);
-            assert.equal(cpu.memory.get16(0x01FD), 0xC002);
+            assert.equal(cpu.memory.get16(0x01FC), 0xC002);
         })
     });
 

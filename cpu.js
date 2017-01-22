@@ -667,8 +667,8 @@ class CPU {
     }
 
     push16(val) {
-        this.memory.put16(this.sp + 0x100, val);
-        this.sp -= 2;
+        this.push8(val >> 8 & 0xFF);
+        this.push8(val & 0xFF);
     }
 
     pop8() {
@@ -677,8 +677,7 @@ class CPU {
     }
 
     pop16() {
-        this.sp += 2;
-        return this.memory.get16(this.sp + 0x100);
+        return this.pop8() | (this.pop8() << 8);
     }
 
     disassemble(addr) {
