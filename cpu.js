@@ -844,7 +844,10 @@ class CPU {
     }
 
     indirectXAddress() {
-        return this.memory.get16((this.readPC() + this.x) & 0xFF);
+        const addr = (this.readPC() + this.x);
+        // fetch a 16-bit address but wrap around each 8-bit fetch
+        return (this.memory.get8((addr+1) & 0xFF) << 8)
+            | this.memory.get8(addr & 0xFF)
     }
 
     indirectYAddress() {
