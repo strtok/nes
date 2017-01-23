@@ -480,7 +480,71 @@ let OpCodes = {
     ],
     NOP: [
         { op: 0xEA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
-        }}
+        }},
+        // below are all undocumented no-op instructions
+        { op: 0x80, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x1A, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+        }},
+        { op: 0x3A, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+        }},
+        { op: 0x5A, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+        }},
+        { op: 0x7A, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+        }},
+        { op: 0xDA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+        }},
+        { op: 0xFA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
+        }},
+        { op: 0x04, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x14, mode: AddrMode.INDIRECT_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x34, mode: AddrMode.INDIRECT_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x44, mode: AddrMode.INDIRECT_X, cycles: 3, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x54, mode: AddrMode.INDIRECT_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x64, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x74, mode: AddrMode.INDIRECT_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0xD4, mode: AddrMode.INDIRECT_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0xF4, mode: AddrMode.INDIRECT_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC();
+        }},
+        { op: 0x0C, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.readPC16();
+        }},
+        { op: 0x1C, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC16();
+        }},
+        { op: 0x3C, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC16();
+        }},
+        { op: 0x5C, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC16();
+        }},
+        { op: 0x7C, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC16();
+        }},
+        { op: 0xDC, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC16();
+        }},
+        { op: 0xFC, mode: AddrMode.ABSOLUTE_X, cycles: 4, exe: function(cpu) {
+            cpu.readPC16();
+        }},
     ],
     ORA: [
         { op: 0x09, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
