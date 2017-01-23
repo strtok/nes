@@ -19,7 +19,8 @@ let AddrMode = {
     ZEROPAGE:   9,
     ZEROPAGE_X: 10,
     ZEROPAGE_Y: 11,
-    ACCUMULATOR: 12
+    ACCUMULATOR: 12,
+    INDIRECT: 13
 };
 
 let Flag = {
@@ -388,6 +389,9 @@ let OpCodes = {
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
             cpu.pc = cpu.readPC16();
+        }},
+        { op: 0x6C, mode: AddrMode.INDIRECT, cycles: 5, exe: function(cpu) {
+            cpu.pc = cpu.memory.get16WithPageWrap(cpu.readPC16());
         }}
     ],
     JSR: [
@@ -870,19 +874,19 @@ class CPU {
     }
 
     absoluteXAddress() {
-        return this.readPC16() + this.x;
+        return (this.readPC16() + this.x) & 0xFFFF;
     }
 
     absoluteYAddress() {
-        return this.readPC16() + this.y;
+        return (this.readPC16() + this.y) & 0xFFFF;
     }
 
     indirectXAddress() {
-        return this.memory.get16FromZeroPage((this.readPC() + this.x));
+        return this.memory.get16WithPageWrap((this.readPC() + this.x) & 0xFF);
     }
 
     indirectYAddress() {
-        const addr = this.memory.get16FromZeroPage(this.readPC());
+        const addr = this.memory.get16WithPageWrap(this.readPC());
         return (addr + this.y) & 0xFFFF;
     }
 
@@ -997,6 +1001,9 @@ class CPU {
                     disasm.push(printf("#$%02X", this.memory.get8(addr + 1)));
                     break;
                 case AddrMode.IMPLICIT:
+                    break;
+                case AddrMode.INDIRECT:
+                    disasm.push(printf("($%04X)", this.memory.get16(addr + 1)));
                     break;
                 case AddrMode.INDIRECT_X:
                     disasm.push(printf("($%02X, X)", this.memory.get8(addr + 1)));

@@ -544,6 +544,12 @@ describe('CPU', () => {
             let cpu = makeCPU([0x4C, 0xBC, 0xCA]);
             cpu.execute();
             assert.equal(cpu.pc, 0xCABC);
+        });
+        it('INDIRECT', () => {
+            let cpu = makeCPU([0x6C, 0xBC, 0x02]);
+            cpu.memory.put16(0x02BC, 0xABCD);
+            cpu.execute();
+            assert.equal(cpu.pc, 0xABCD);
         })
     });
 

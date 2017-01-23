@@ -60,9 +60,15 @@ class Memory {
         return (this.get8(addr+1) << 8) | this.get8(addr);
     }
 
-    get16FromZeroPage(addr) {
+    get16WithPageWrap(addr) {
         // fetch a 16-bit address but wrap around each 8-bit fetch
-        return ((this.ram[(addr+1) & 0xFF]) << 8) | this.ram[addr & 0xFF];
+        // on 0x100 boundaries
+        let msb = addr + 1;
+        if ((addr & 0xFF) == 0xFF) {
+            msb -= 0x100;
+        }
+
+        return ((this.ram[msb]) << 8) | this.ram[addr];
     }
 
     debugPrintStack() {
