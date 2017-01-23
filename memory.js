@@ -60,6 +60,11 @@ class Memory {
         return (this.get8(addr+1) << 8) | this.get8(addr);
     }
 
+    get16FromZeroPage(addr) {
+        // fetch a 16-bit address but wrap around each 8-bit fetch
+        return ((this.ram[(addr+1) & 0xFF]) << 8) | this.ram[addr & 0xFF];
+    }
+
     debugPrintStack() {
         this.debugPrint(0x100, 0x1FF);
     }

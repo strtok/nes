@@ -878,14 +878,12 @@ class CPU {
     }
 
     indirectXAddress() {
-        const addr = (this.readPC() + this.x);
-        // fetch a 16-bit address but wrap around each 8-bit fetch
-        return (this.memory.get8((addr+1) & 0xFF) << 8)
-            | this.memory.get8(addr & 0xFF)
+        return this.memory.get16FromZeroPage((this.readPC() + this.x));
     }
 
     indirectYAddress() {
-        return this.memory.get16(this.readPC()) + this.y;
+        const addr = this.memory.get16FromZeroPage(this.readPC());
+        return (addr + this.y) & 0xFFFF;
     }
 
     readRelative() {
@@ -1001,10 +999,10 @@ class CPU {
                 case AddrMode.IMPLICIT:
                     break;
                 case AddrMode.INDIRECT_X:
-                    disasm.push(printf("($%04X, X)", this.memory.get8(addr + 1)));
+                    disasm.push(printf("($%02X, X)", this.memory.get8(addr + 1)));
                     break;
                 case AddrMode.INDIRECT_Y:
-                    disasm.push(printf("($%04X)", this.memory.get8(addr + 1)));
+                    disasm.push(printf("($%02X)", this.memory.get8(addr + 1)));
                     disasm.push("Y");
                     break;
                 case AddrMode.RELATIVE:
