@@ -426,6 +426,25 @@ describe('CPU', () => {
         });
     });
 
+    describe('DEC', () => {
+        it('(ZEROPAGE negative', () => {
+            let cpu = makeCPU([0xC6, 0x30]);
+            cpu.memory.put8(0x30, 0);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x30), 0xFF);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('(ZEROPAGE zero', () => {
+            let cpu = makeCPU([0xC6, 0x30]);
+            cpu.memory.put8(0x30, 1);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x30), 0);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.ZERO);
+            expect(cpu).not.flag(Flag.CARRY); // don't touch CARRY
+        });
+    });
+
     describe('DEX', () => {
         it('(IMPLICIT negative', () => {
             let cpu = makeCPU([0xCA]);
@@ -469,6 +488,25 @@ describe('CPU', () => {
             cpu.execute();
             assert.equal(cpu.a, 0b01011010);
             expect(cpu).not.flag(Flag.NEGATIVE);
+        });
+    });
+
+    describe('INC', () => {
+        it('(ZEROPAGE negative', () => {
+            let cpu = makeCPU([0xE6, 0x30]);
+            cpu.memory.put8(0x30, 0xFE);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x30), 0xFF);
+            expect(cpu).flag(Flag.NEGATIVE);
+        });
+        it('(ZEROPAGE zero', () => {
+            let cpu = makeCPU([0xE6, 0x30]);
+            cpu.memory.put8(0x30, 0xFF);
+            cpu.execute();
+            assert.equal(cpu.memory.get8(0x30), 0);
+            expect(cpu).not.flag(Flag.NEGATIVE);
+            expect(cpu).flag(Flag.ZERO);
+            expect(cpu).not.flag(Flag.CARRY); // don't touch CARRY
         });
     });
 

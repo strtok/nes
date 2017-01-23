@@ -286,6 +286,32 @@ let OpCodes = {
             cpu.setComparisonFlags(cpu.y - cpu.readAbsolute());
         }}
     ],
+    DEC: [
+        { op: 0xC6, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0xD6, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0xCE, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0xDE, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+    ],
     DEX: [
         { op: 0xCA, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
             cpu.x = math.wrap(cpu.x - 1);
@@ -322,6 +348,32 @@ let OpCodes = {
             cpu.a ^= cpu.readIndirectY();
         }}
 
+    ],
+    INC: [
+        { op: 0xE6, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0xF6, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0xEE, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
+        { op: 0xFE, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+        }},
     ],
     INX: [
         { op: 0xE8, mode: AddrMode.IMPLICIT, cycles: 2, exe: function(cpu) {
