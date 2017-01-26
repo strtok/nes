@@ -692,6 +692,10 @@ let OpCodes = {
         { op: 0xE9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             sbc(cpu, cpu.readPC());
         }},
+        // undocumented
+        { op: 0xEB, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
+            sbc(cpu, cpu.readPC());
+        }},
         { op: 0xE5, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             sbc(cpu, cpu.readZeroPage());
         }},
