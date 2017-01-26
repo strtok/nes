@@ -674,6 +674,20 @@ let OpCodes = {
             cpu.pc = cpu.pop16() + 1;
         }}
     ],
+    SAX: [
+        { op: 0x87, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.writeZeroPage(cpu.a & cpu.x);
+        }},
+        { op: 0x97, mode: AddrMode.ZEROPAGE_Y, cycles: 4, exe: function(cpu) {
+            cpu.writeZeroPageY(cpu.a & cpu.x);
+        }},
+        { op: 0x8F, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.writeAbsolute(cpu.a & cpu.x);
+        }},
+        { op: 0x83, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
+            cpu.writeIndirectX(cpu.a & cpu.x);
+        }}
+    ],
     SBC: [
         { op: 0xE9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             sbc(cpu, cpu.readPC());
