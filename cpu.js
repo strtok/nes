@@ -1132,7 +1132,7 @@ class CPU {
             if (e instanceof TypeError) {
                 debug("invalid op code $%b (%s)", op, e.toString());
                 this.memory.debugPrintStack();
-                throw new Error("invalid op code " + op + " " + e.toString());
+                throw new Error(printf("invalid op code $%02X - %s", op, e.toString()));
             } else {
                 throw e;
             }
