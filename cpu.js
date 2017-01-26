@@ -400,6 +400,27 @@ let OpCodes = {
             cpu.pc = cpu.readPC16();
         }}
     ],
+    // illegal instruction
+    LAX: [
+        { op: 0xA7, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
+            cpu.a = cpu.x = cpu.readZeroPage();
+        }},
+        { op: 0xB7, mode: AddrMode.ZEROPAGE_Y, cycles: 4, exe: function(cpu) {
+            cpu.a = cpu.x = cpu.readZeroPageY();
+        }},
+        { op: 0xA3, mode: AddrMode.INDIRECT_X, cycles: 6, exe: function(cpu) {
+            cpu.a = cpu.x = cpu.readIndirectX();
+        }},
+        { op: 0xB3, mode: AddrMode.INDIRECT_Y, cycles: 6, exe: function(cpu) {
+            cpu.a = cpu.x = cpu.readIndirectY();
+        }},
+        { op: 0xAF, mode: AddrMode.ABSOLUTE, cycles: 4, exe: function(cpu) {
+            cpu.a = cpu.x = cpu.readAbsolute();
+        }},
+        { op: 0xBF, mode: AddrMode.ABSOLUTE_Y, cycles: 4, exe: function(cpu) {
+            cpu.a = cpu.x = cpu.readAbsoluteY();
+        }},
+    ],
     LDA: [
         { op: 0xA9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             cpu.a = cpu.readPC();
