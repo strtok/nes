@@ -287,6 +287,58 @@ let OpCodes = {
             cpu.setComparisonFlags(cpu.y - cpu.readAbsolute());
         }}
     ],
+    // undocumented instruction
+    DCP: [
+        { op: 0xC7, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            cpu.setComparisonFlags(cpu.a - val);
+        }},
+        { op: 0xD7, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            cpu.setComparisonFlags(cpu.a - val);
+        }},
+        { op: 0xCF, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            cpu.setComparisonFlags(cpu.a - val);
+        }},
+        { op: 0xDF, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            cpu.setComparisonFlags(cpu.a - val);
+        }},
+        { op: 0xDB, mode: AddrMode.ABSOLUTE_Y, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteYAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            cpu.setComparisonFlags(cpu.a - val);
+        }},
+        { op: 0xC3, mode: AddrMode.INDIRECT_X, cycles: 8, exe: function(cpu) {
+            const addr = cpu.indirectXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            cpu.setComparisonFlags(cpu.a - val);
+        }},
+        { op: 0xD3, mode: AddrMode.INDIRECT_Y, cycles: 8, exe: function(cpu) {
+            const addr = cpu.indirectYAddress();
+            let val = math.wrap(cpu.memory.get8(addr) - 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            cpu.setComparisonFlags(cpu.a - val);
+        }}
+    ],
     DEC: [
         { op: 0xC6, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
             const addr = cpu.zeroPageAddress();
@@ -386,6 +438,60 @@ let OpCodes = {
             cpu.y = math.wrap(cpu.y + 1);
         }},
     ],
+    // undocumented instruction
+    ISC: [
+        { op: 0xE7, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            const addr = cpu.zeroPageAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            sbc(cpu, val);
+        }},
+        { op: 0xF7, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            const addr = cpu.zeroPageXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            sbc(cpu, val);
+
+        }},
+        { op: 0xEF, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            const addr = cpu.absoluteAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            sbc(cpu, val);
+
+        }},
+        { op: 0xFF, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            sbc(cpu, val);
+        }},
+        { op: 0xFB, mode: AddrMode.ABSOLUTE_Y, cycles: 7, exe: function(cpu) {
+            const addr = cpu.absoluteYAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            sbc(cpu, val);
+        }},
+        { op: 0xE3, mode: AddrMode.INDIRECT_X, cycles: 8, exe: function(cpu) {
+            const addr = cpu.indirectXAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            sbc(cpu, val);
+        }},
+        { op: 0xF3, mode: AddrMode.INDIRECT_Y, cycles: 8, exe: function(cpu) {
+            const addr = cpu.indirectYAddress();
+            let val = math.wrap(cpu.memory.get8(addr) + 1);
+            cpu.setNegativeAndZeroFlags(val);
+            cpu.memory.put8(addr, val);
+            sbc(cpu, val);
+        }},
+    ],
     JMP: [
         { op: 0x4C, mode: AddrMode.ABSOLUTE, cycles: 3, exe: function(cpu) {
             cpu.pc = cpu.readPC16();
@@ -400,7 +506,7 @@ let OpCodes = {
             cpu.pc = cpu.readPC16();
         }}
     ],
-    // illegal instruction
+    // undocumented instruction
     LAX: [
         { op: 0xA7, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.a = cpu.x = cpu.readZeroPage();
