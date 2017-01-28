@@ -3,11 +3,11 @@ let hex = require('hex');
 var printf = require("printf");
 
 class Memory {
-    constructor(prgRom) {
-
+    constructor(prgRom, apu) {
         // PRG-ROM, which is stored
         // $8000 - $10000
         this.prgRom = [prgRom[0]];
+        this.apu = apu;
         if (prgRom.length == 1) {
             this.prgRom.push(prgRom[0]);
         } else {
@@ -28,6 +28,12 @@ class Memory {
         } else if (addr < 0x2000) {
             this.ram[addr - 0x800] = val;
             return;
+        } else if (addr < 0x4000) {
+            // ppu
+            throw Error(printf("ppu not implemented. cannot access memory at $%02X", addr));
+        } else if (addr < 0x4018) {
+            this.apu.put8(addr, val);
+            return;
         }
 
         throw Error(printf("invalid access of memory location $%02X", addr));
@@ -44,6 +50,16 @@ class Memory {
             return this.ram[addr];
         } else if (addr < 0x2000) {
             return this.ram[addr - 0x800];
+        }
+
+        // PPU
+        if (addr < 0x4000) {
+            throw Error(printf("ppu not implemented. cannot access memory at $%02X", addr));
+        }
+
+        // APU
+        if (addr < 0x4018) {
+            return this.apu.get8(addr);
         }
 
         // PRG-ROM

@@ -3,6 +3,7 @@ let Rom = require('../rom').Rom;
 let Memory = require('../memory').Memory;
 let CPU = require('../cpu').CPU;
 let Flag = require('../cpu').Flag;
+let APU = require('../apu').APU;
 let nestest = require('./nestest_rom');
 let log = require('./nestest_log').log;
 let printf = require('printf');
@@ -10,7 +11,7 @@ let printf = require('printf');
 describe('nestest', () => {
     it('executes as expected', function() {
         let rom = new Rom(nestest.byteArray());
-        let memory = new Memory(rom.prgRom);
+        let memory = new Memory(rom.prgRom, new APU());
         let cpu = new CPU(memory);
 
         const registers = ['pc', 'a', 'x', 'y', 'sp'];

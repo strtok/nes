@@ -31,7 +31,7 @@ function makeCPU(code) {
 describe('CPU', () => {
 
     it('throws on executing unknown instruction', () => {
-        let memory = new Memory([[0x00]]);
+        let memory = new Memory([[0x00]], null);
         let cpu = new CPU(memory);
         assert.throws(cpu.execute, Error);
     });
