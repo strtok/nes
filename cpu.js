@@ -400,7 +400,6 @@ let OpCodes = {
         { op: 0x51, mode: AddrMode.INDIRECT_Y, cycles: 5, exe: function(cpu) {
             cpu.a ^= cpu.readIndirectY();
         }}
-
     ],
     INC: [
         { op: 0xE6, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
@@ -721,6 +720,44 @@ let OpCodes = {
             cpu.p = cpu.pop8();
         }}
     ],
+    // undocumented instruction
+    RLA: [
+        { op: 0x27, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            let addr = cpu.zeroPageAddress();
+            rol(cpu, addr);
+            cpu.a &= cpu.memory.get8(addr);
+        }},
+        { op: 0x37, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            let addr = cpu.zeroPageXAddress();
+            rol(cpu, addr);
+            cpu.a &= cpu.memory.get8(addr);
+        }},
+        { op: 0x2F, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            let addr = cpu.absoluteAddress();
+            rol(cpu, addr);
+            cpu.a &= cpu.memory.get8(addr);
+        }},
+        { op: 0x3F, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteXAddress();
+            rol(cpu, addr);
+            cpu.a &= cpu.memory.get8(addr);
+        }},
+        { op: 0x3B, mode: AddrMode.ABSOLUTE_Y, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteYAddress();
+            rol(cpu, addr);
+            cpu.a &= cpu.memory.get8(addr);
+        }},
+        { op: 0x23, mode: AddrMode.INDIRECT_X, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectXAddress();
+            rol(cpu, addr);
+            cpu.a &= cpu.memory.get8(addr);
+        }},
+        { op: 0x33, mode: AddrMode.INDIRECT_Y, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectYAddress();
+            rol(cpu, addr);
+            cpu.a &= cpu.memory.get8(addr);
+        }}
+    ],
     ROL: [
         { op: 0x2A, mode: AddrMode.ACCUMULATOR, cycles: 2, exe: function(cpu) {
             let val = cpu.a;
@@ -769,6 +806,44 @@ let OpCodes = {
             ror(cpu, cpu.absoluteXAddress());
         }}
     ],
+    // undocumented instruction
+    RRA: [
+        { op: 0x67, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            let addr = cpu.zeroPageAddress();
+            ror(cpu, addr);
+            adc(cpu, cpu.memory.get8(addr));
+        }},
+        { op: 0x77, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            let addr = cpu.zeroPageXAddress();
+            ror(cpu, addr);
+            adc(cpu, cpu.memory.get8(addr));
+        }},
+        { op: 0x6F, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            let addr = cpu.absoluteAddress();
+            ror(cpu, addr);
+            adc(cpu, cpu.memory.get8(addr));
+        }},
+        { op: 0x7F, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteXAddress();
+            ror(cpu, addr);
+            adc(cpu, cpu.memory.get8(addr));
+        }},
+        { op: 0x7B, mode: AddrMode.ABSOLUTE_Y, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteYAddress();
+            ror(cpu, addr);
+            adc(cpu, cpu.memory.get8(addr));
+        }},
+        { op: 0x63, mode: AddrMode.INDIRECT_X, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectXAddress();
+            ror(cpu, addr);
+            adc(cpu, cpu.memory.get8(addr));
+        }},
+        { op: 0x73, mode: AddrMode.INDIRECT_Y, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectYAddress();
+            ror(cpu, addr);
+            adc(cpu, cpu.memory.get8(addr));
+        }}
+    ],
     RTI: [
         { op: 0x40, mode: AddrMode.IMPLICIT, cycles: 6, exe: function(cpu) {
             cpu.p = cpu.pop8();
@@ -780,6 +855,7 @@ let OpCodes = {
             cpu.pc = cpu.pop16() + 1;
         }}
     ],
+    // undocumented instruction
     SAX: [
         { op: 0x87, mode: AddrMode.ZEROPAGE, cycles: 3, exe: function(cpu) {
             cpu.writeZeroPage(cpu.a & cpu.x);
@@ -794,6 +870,7 @@ let OpCodes = {
             cpu.writeIndirectX(cpu.a & cpu.x);
         }}
     ],
+    // undocumented instruction
     SBC: [
         { op: 0xE9, mode: AddrMode.IMMEDIATE, cycles: 2, exe: function(cpu) {
             sbc(cpu, cpu.readPC());
@@ -837,6 +914,82 @@ let OpCodes = {
     SEI: [
         { op: 0x78, mode: AddrMode.ZEROPAGE, cycles: 2, exe: function(cpu) {
             cpu.p |= Flag.INTERRUPT;
+        }}
+    ],
+    // undocumented instruction
+    SLO: [
+        { op: 0x07, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            let addr = cpu.zeroPageAddress();
+            asl(cpu, addr);
+            cpu.a |= cpu.memory.get8(addr);
+        }},
+        { op: 0x17, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            let addr = cpu.zeroPageXAddress();
+            asl(cpu, addr);
+            cpu.a |= cpu.memory.get8(addr);
+        }},
+        { op: 0x0F, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            let addr = cpu.absoluteAddress();
+            asl(cpu, addr);
+            cpu.a |= cpu.memory.get8(addr);
+        }},
+        { op: 0x1F, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteXAddress();
+            asl(cpu, addr);
+            cpu.a |= cpu.memory.get8(addr);
+        }},
+        { op: 0x1B, mode: AddrMode.ABSOLUTE_Y, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteYAddress();
+            asl(cpu, addr);
+            cpu.a |= cpu.memory.get8(addr);
+        }},
+        { op: 0x03, mode: AddrMode.INDIRECT_X, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectXAddress();
+            asl(cpu, addr);
+            cpu.a |= cpu.memory.get8(addr);
+        }},
+        { op: 0x13, mode: AddrMode.INDIRECT_Y, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectYAddress();
+            asl(cpu, addr);
+            cpu.a |= cpu.memory.get8(addr);
+        }}
+    ],
+    // undocumented instruction
+    SRE: [
+        { op: 0x47, mode: AddrMode.ZEROPAGE, cycles: 5, exe: function(cpu) {
+            let addr = cpu.zeroPageAddress();
+            lsr(cpu, addr);
+            cpu.a ^= cpu.memory.get8(addr);
+        }},
+        { op: 0x57, mode: AddrMode.ZEROPAGE_X, cycles: 6, exe: function(cpu) {
+            let addr = cpu.zeroPageXAddress();
+            lsr(cpu, addr);
+            cpu.a ^= cpu.memory.get8(addr);
+        }},
+        { op: 0x4F, mode: AddrMode.ABSOLUTE, cycles: 6, exe: function(cpu) {
+            let addr = cpu.absoluteAddress();
+            lsr(cpu, addr);
+            cpu.a ^= cpu.memory.get8(addr);
+        }},
+        { op: 0x5F, mode: AddrMode.ABSOLUTE_X, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteXAddress();
+            lsr(cpu, addr);
+            cpu.a ^= cpu.memory.get8(addr);
+        }},
+        { op: 0x5B, mode: AddrMode.ABSOLUTE_Y, cycles: 7, exe: function(cpu) {
+            let addr = cpu.absoluteYAddress();
+            lsr(cpu, addr);
+            cpu.a ^= cpu.memory.get8(addr);
+        }},
+        { op: 0x43, mode: AddrMode.INDIRECT_X, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectXAddress();
+            lsr(cpu, addr);
+            cpu.a ^= cpu.memory.get8(addr);
+        }},
+        { op: 0x53, mode: AddrMode.INDIRECT_Y, cycles: 8, exe: function(cpu) {
+            let addr = cpu.indirectYAddress();
+            lsr(cpu, addr);
+            cpu.a ^= cpu.memory.get8(addr);
         }}
     ],
     STA: [
